@@ -5,15 +5,17 @@ import SubViewManager from "./manager/sub";
 import {IKeyboard} from "../handler/keyboard";
 import {Input} from "electron";
 
+interface ICSSData {
+    filePath: string,
+    element: HTMLLinkElement
+}
+
 export default class ViewBase implements IKeyboard {
     private readonly name: string;
     private manager: ViewManager;
     private subManager: SubViewManager;
     private readonly mainElement: ElementHolder;
-    private readonly css: {
-        filePath: string,
-        element: HTMLLinkElement
-    }[] = [];
+    private readonly css: ICSSData[] = [];
     private readonly keyboardActions: [RegExp, Function][] = [];
 
     constructor(name: string, cssFilePaths?: string | string[]) {
@@ -24,20 +26,33 @@ export default class ViewBase implements IKeyboard {
         );
         if(cssFilePaths) {
             if(!Array.isArray(cssFilePaths)) cssFilePaths = [cssFilePaths];
-            cssFilePaths.forEach(cssFilePath => {
-                const linkElement = document.createElement("link");
-                linkElement.rel = "stylesheet";
-                linkElement.type = "text/css";
-                linkElement.href = cssFilePath;
-                this.css.push({
-                    filePath: cssFilePath,
-                    element: linkElement,
-                });
-            });
+            this.addCSS(...cssFilePaths);
         }
     }
 
     getMainElement = () => this.mainElement;
+
+    checkCSS(cssPath: string) {
+        return this.css.some(data => data.filePath == cssPath);
+    }
+
+    addCSS(...cssPaths: string[]) {
+        let result = 0;
+        for(const cssPath of cssPaths) {
+            if(this.checkCSS(cssPath)) continue;
+
+            const linkElement = document.createElement("link");
+            linkElement.rel = "stylesheet";
+            linkElement.type = "text/css";
+            linkElement.href = cssPath;
+            this.css.push({
+                filePath: cssPath,
+                element: linkElement,
+            });
+            result++;
+        }
+        return result;
+    }
 
     createKeyboardAction(regex: RegExp, action: Function) {
         this.keyboardActions.push([regex, action]);
