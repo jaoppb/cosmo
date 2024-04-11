@@ -1,0 +1,16 @@
+.search {
+    .list .item, .header {
+        display: grid;
+        grid-template-columns: 60px 5fr 4fr 2fr 2fr 2fr 3fr;
+    }
+
+    .name {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin-right: 20px;
+    }
+
+    .stock {
+        padding-left: 14px;
+    }
+}

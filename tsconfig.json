@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "noImplicitAny":  true,
+        "module": "commonjs",
+        "allowJs": true,
+        "target": "ESNext",
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true,
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules/"
+    ]
+}

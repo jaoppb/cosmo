@@ -1,0 +1,6 @@
+.search {
+    .list .item, .header {
+        display: grid;
+        grid-template-columns: 60px 3fr 4fr 2fr;
+    }
+}

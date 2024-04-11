@@ -1,0 +1,24 @@
+{
+    "name": "cosmo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./dist/index.js",
+    "scripts": {
+        "start": "electron --trace-warnings ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/express": "^4.17.21",
+        "electron": "^29.1.1",
+        "electron-reloader": "^1.2.3"
+    },
+    "dependencies": {
+        "body-parser": "^1.20.2",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "mongodb": "^6.5.0",
+        "typescript": "^5.4.2"
+    }
+}

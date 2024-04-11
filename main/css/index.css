@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+:root {
+    --primary-color: purple;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    user-select: none;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+input[type="number"] {
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    z-index: 1000;
+    border-right: 1px solid black;
+    transition: 350ms all;
+    background-color: white;
+}
+
+nav:hover:not(:has(.view.current:hover)) {
+    max-width: 350px;
+}
+
+nav .view{
+    display: grid;
+    grid-template: 100px / 100px auto;
+    transition: 300ms all;
+    position: relative;
+}
+
+nav .view:hover:not(.current)  {
+    background-color: black;
+    cursor: pointer;
+    color: white;
+}
+
+nav .view.current::before {
+    left: 0;
+    transition: 150ms all;
+}
+
+nav .view::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -5px;
+    height: 100px;
+    width: 5px;
+    background-color: var(--color);
+}
+
+nav .view.current>* {
+    color: var(--color);
+}
+
+nav .view.current {
+    background-color: #1d1d1d;
+}
+
+nav .view i {
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+nav .view span {
+    height: 100px;
+    width: 250px;
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+main {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    left: 100px;
+    width: calc(100% - 100px);
+    overflow: hidden;
+}
