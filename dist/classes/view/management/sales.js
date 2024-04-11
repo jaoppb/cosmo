@@ -66,7 +66,7 @@ class ViewManagementSales extends base_1.default {
         this.loadItems();
     }
     selectItem(itemData) {
-        this.openEdit();
+        this.menus.edit.open();
         this.currentItem = itemData;
     }
 }

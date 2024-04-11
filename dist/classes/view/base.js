@@ -15,19 +15,30 @@ class ViewBase {
         if (cssFilePaths) {
             if (!Array.isArray(cssFilePaths))
                 cssFilePaths = [cssFilePaths];
-            cssFilePaths.forEach(cssFilePath => {
-                const linkElement = document.createElement("link");
-                linkElement.rel = "stylesheet";
-                linkElement.type = "text/css";
-                linkElement.href = cssFilePath;
-                this.css.push({
-                    filePath: cssFilePath,
-                    element: linkElement,
-                });
-            });
+            this.addCSS(...cssFilePaths);
         }
     }
     getMainElement = () => this.mainElement;
+    checkCSS(cssPath) {
+        return this.css.some(data => data.filePath == cssPath);
+    }
+    addCSS(...cssPaths) {
+        let result = 0;
+        for (const cssPath of cssPaths) {
+            if (this.checkCSS(cssPath))
+                continue;
+            const linkElement = document.createElement("link");
+            linkElement.rel = "stylesheet";
+            linkElement.type = "text/css";
+            linkElement.href = cssPath;
+            this.css.push({
+                filePath: cssPath,
+                element: linkElement,
+            });
+            result++;
+        }
+        return result;
+    }
     createKeyboardAction(regex, action) {
         this.keyboardActions.push([regex, action]);
     }

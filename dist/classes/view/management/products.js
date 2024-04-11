@@ -64,7 +64,7 @@ class ViewManagementProducts extends base_1.default {
             }
         });
         this.createKeyboardAction(/^Escape$/, (event) => {
-            this.closeEdit();
+            this.menus.edit.close();
         });
         this.elements.inputs = {
             name: editNameInput,
@@ -161,7 +161,7 @@ class ViewManagementProducts extends base_1.default {
         this.elements.inputs.stock.element.value = itemData.stock.toString();
         if (itemData.ncm)
             this.elements.inputs.ncm.element.value = (0, convert_1.parseNCM)(itemData.ncm);
-        this.openEdit();
+        this.menus.edit.open();
         this.currentItem = itemData;
     }
 }

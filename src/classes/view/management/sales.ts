@@ -75,8 +75,7 @@ export default class ViewManagementSales extends ViewManagementBase {
     }
 
     selectItem(itemData: ISale) {
-
-        this.openEdit();
+        this.menus.edit.open();
         this.currentItem = itemData;
     }
 }

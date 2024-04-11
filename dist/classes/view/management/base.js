@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("../base");
 const convert_1 = require("../../../shared/convert");
+const menu_1 = require("../extra/menu");
 class ViewManagementBase extends base_1.default {
     queryFromInput() { }
     ;
@@ -18,12 +19,14 @@ class ViewManagementBase extends base_1.default {
     offset = 0;
     batchSize = 20;
     elements;
+    menus;
     itemQuery;
     currentItem;
     constructor(name, cssPathFile) {
         if (!Array.isArray(cssPathFile))
             cssPathFile = [cssPathFile];
         super(name, ["css/management/base.css", ...cssPathFile]);
+        const menus = this.createChild("menus", "div");
         const search = this.createChild("search", "div");
         const searchBar = search.createChild("bar", "div");
         const searchInput = searchBar.createChild("input", "input");
@@ -38,7 +41,7 @@ class ViewManagementBase extends base_1.default {
         const createButtonText = createButton.createChild("text", "span");
         createButtonText.element.innerText = `Novo ${(0, convert_1.title)(name)}`;
         createButton.element.addEventListener("click", () => {
-            this.openCreate();
+            this.menus.create.open();
         });
         const deleteButton = searchBar.createChild("delete", "button");
         deleteButton.createChild("icon", "i", ["fa-solid", "fa-trash-can"]);
@@ -50,20 +53,7 @@ class ViewManagementBase extends base_1.default {
         const itemsHeaderSelect = itemsHeaderSelectWrapper.createChild("input", "input");
         itemsHeaderSelect.element.type = "checkbox";
         const itemsList = itemsWrapper.createChild("list", "div");
-        const fade = this.createChild("fade", "div");
-        const edit = this.createChild("edit", "div", ["menu"]);
-        const editTop = edit.createChild("top", "div");
-        const editTitle = editTop.createChild("title", "span");
-        editTitle.element.innerText = "Editar";
-        const editClose = editTop.createChild("close", "div");
-        const editCloseIcon = editClose.createChild("icon", "i");
-        editCloseIcon.element.classList.add("fa-solid", "fa-close");
-        editClose.element.addEventListener("click", () => {
-            this.closeEdit();
-        });
-        const editFields = edit.createChild("fields", "div");
-        const editBottom = edit.createChild("bottom", "div");
-        [
+        const editButtonsData = [
             {
                 text: "Apagar",
                 class: "delete",
@@ -76,30 +66,15 @@ class ViewManagementBase extends base_1.default {
                 icon: "fa-check",
                 handler: () => this.createItem()
             }
-        ].forEach(buttonData => {
-            const button = editBottom.createChild(buttonData.class, "button");
-            button.createChild("icon", "i", ["fa-solid", buttonData.icon]);
-            button.createChild("text", "span").element.innerText = buttonData.text;
-            button.element.addEventListener("click", buttonData.handler);
-        });
-        const create = this.createChild("create", "div", ["menu"]);
-        const createTop = create.createChild("top", "div");
-        const createTitle = createTop.createChild("title", "span");
-        createTitle.element.innerText = "Criar";
-        const createClose = createTop.createChild("close", "div");
-        const createCloseIcon = createClose.createChild("icon", "i");
-        createCloseIcon.element.classList.add("fa-solid", "fa-close");
-        createClose.element.addEventListener("click", () => {
-            this.closeCreate();
-        });
-        const createFields = create.createChild("fields", "div");
-        const createBottom = create.createChild("bottom", "div");
-        [
+        ];
+        const edit = new menu_1.default("Editar", editButtonsData, this, menus);
+        const editFields = edit.elements.fields;
+        const createButtonsData = [
             {
                 text: "Cancelar",
                 class: "delete",
                 icon: "fa-xmark",
-                handler: () => this.closeCreate()
+                handler: () => this.menus.create.close()
             },
             {
                 text: "Criar",
@@ -107,12 +82,9 @@ class ViewManagementBase extends base_1.default {
                 icon: "fa-plus",
                 handler: () => this.createItem()
             }
-        ].forEach(buttonData => {
-            const button = createBottom.createChild(buttonData.class, "button");
-            button.createChild("icon", "i", ["fa-solid", buttonData.icon]);
-            button.createChild("text", "span").element.innerText = buttonData.text;
-            button.element.addEventListener("click", buttonData.handler);
-        });
+        ];
+        const create = new menu_1.default("Criar", createButtonsData, this, menus);
+        const createFields = create.elements.fields;
         itemsList.element.addEventListener("scroll", event => {
             if (itemsList.element.scrollTop / itemsList.children[0]?.element.offsetHeight > itemsList.children.length - 10) {
                 this.loadItems();
@@ -121,18 +93,16 @@ class ViewManagementBase extends base_1.default {
         this.createKeyboardAction(/^Enter$/, (event) => {
             if (/keydown/.test(event.type))
                 return;
-            if (this.checkEdit())
+            if (this.menus.edit.check())
                 this.saveItem();
             else
                 this.queryFromInput();
         });
         this.elements = {
             editMenu: {
-                main: edit,
                 fields: editFields
             },
             createMenu: {
-                main: create,
                 fields: createFields
             },
             search: {
@@ -144,6 +114,10 @@ class ViewManagementBase extends base_1.default {
                 },
             },
         };
+        this.menus = {
+            edit: edit,
+            create: create,
+        };
     }
     reset() {
         this.clearItems();
@@ -152,7 +126,7 @@ class ViewManagementBase extends base_1.default {
             this.queryFromInput();
         else
             this.loadItems();
-        this.closeEdit();
+        this.menus.edit.close();
     }
     clearItems() {
         this.elements.search.items.list.deleteChildren();
@@ -175,40 +149,6 @@ class ViewManagementBase extends base_1.default {
     unload() {
         super.unload();
         this.clearItems();
-    }
-    checkEdit() {
-        return this.elements.editMenu.main.element.classList.contains("show");
-    }
-    checkCreate() {
-        return this.elements.createMenu.main.element.classList.contains("show");
-    }
-    openEdit() {
-        if (this.checkEdit())
-            return;
-        this.elements.editMenu.main.element.classList.remove("hide");
-        this.elements.editMenu.main.element.classList.add("show");
-    }
-    closeEdit() {
-        if (!this.checkEdit())
-            return;
-        this.elements.editMenu.main.element.classList.remove("show");
-        this.elements.editMenu.main.element.classList.add("hide");
-        setTimeout(() => this.elements.editMenu.main.element.classList.remove("hide"), 500);
-        document.querySelector(".item.current")?.classList.remove("current");
-    }
-    openCreate() {
-        if (this.checkCreate())
-            return;
-        this.elements.createMenu.main.element.classList.remove("hide");
-        this.elements.createMenu.main.element.classList.add("show");
-    }
-    closeCreate() {
-        if (!this.checkCreate())
-            return;
-        this.elements.createMenu.main.element.classList.remove("show");
-        this.elements.createMenu.main.element.classList.add("hide");
-        setTimeout(() => this.elements.createMenu.main.element.classList.remove("hide"), 500);
-        document.querySelector(".item.current")?.classList.remove("current");
     }
 }
 exports.default = ViewManagementBase;

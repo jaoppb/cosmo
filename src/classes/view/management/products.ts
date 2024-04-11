@@ -88,7 +88,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
         });
 
         this.createKeyboardAction(/^Escape$/, (event: KeyboardEvent) => {
-            this.closeEdit();
+            this.menus.edit.close();
         });
 
         this.elements.inputs = {
@@ -198,7 +198,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
         this.elements.inputs.sale.element.value = parseToCash(itemData.price.sale);
         this.elements.inputs.stock.element.value = itemData.stock.toString();
         if(itemData.ncm) this.elements.inputs.ncm.element.value = parseNCM(itemData.ncm);
-        this.openEdit();
+        this.menus.edit.open();
         this.currentItem = itemData;
     }
 }
