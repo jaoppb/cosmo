@@ -4,7 +4,8 @@ import ViewBase from "../base";
 interface IUsedElements {
     main: ElementHolder,
     closeButton: ElementHolder<HTMLElementType<"button">>,
-    fields: ElementHolder<HTMLElementType<"div">>
+    fields: ElementHolder<HTMLElementType<"div">>,
+    bottomButtons: ElementHolder<HTMLElementType<"button">>[],
 }
 
 export interface ButtonData {
@@ -13,6 +14,7 @@ export interface ButtonData {
     icon: string,
     handler: () => void,
 }
+
 export default class Menu {
     elements: IUsedElements;
     constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder) {
@@ -37,17 +39,20 @@ export default class Menu {
         const menuFields = menu.createChild("fields", "div");
 
         const menuBottom = menu.createChild("bottom", "div");
+        const menuBottomButtons: ElementHolder<HTMLElementType<"button">>[] = [];
         bottomButtons.forEach(buttonData => {
             const button = menuBottom.createChild(buttonData.class, "button");
             button.createChild("icon", "i", ["fa-solid", buttonData.icon]);
             button.createChild("text", "span").element.innerText = buttonData.text;
             button.element.addEventListener("click", buttonData.handler);
+            menuBottomButtons.push(button);
         });
 
         this.elements = {
             main: menu,
             closeButton: menuClose,
-            fields: menuFields
+            fields: menuFields,
+            bottomButtons: menuBottomButtons,
         }
     }
     
