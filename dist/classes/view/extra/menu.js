@@ -1,6 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ButtonData = void 0;
 const base_1 = require("../base");
+class ButtonData {
+    text;
+    class;
+    icon;
+    confirm;
+    handler;
+    constructor(text, elementClass, icon, handler, confirm) {
+        this.text = text;
+        this.class = elementClass;
+        this.icon = icon;
+        this.confirm = confirm ?? false;
+        this.handler = handler;
+    }
+}
+exports.ButtonData = ButtonData;
 class Menu {
     elements;
     constructor(title, bottomButtons, view, parent, classes = []) {

@@ -9,11 +9,27 @@ interface IUsedElements {
     bottomButtons: ElementHolder<HTMLElementType<"button">>[],
 }
 
-export interface ButtonData {
+interface IButtonData {
     text: string,
     class: string,
     icon: string,
+    confirm?: boolean,
     handler: () => void,
+}
+
+export class ButtonData implements IButtonData {
+    text: string;
+    class: string;
+    icon: string;
+    confirm?: boolean;
+    handler: () => void;
+    constructor(text: string, elementClass: string, icon: string, handler: () => void, confirm?: boolean) {
+        this.text = text;
+        this.class = elementClass;
+        this.icon = icon;
+        this.confirm = confirm ?? false;
+        this.handler = handler;
+    }
 }
 
 export default class Menu {
