@@ -6,12 +6,13 @@ import * as itemAPI from "../../database/services/item"
 import ElementHolder, {HTMLElementType} from "../element/holder";
 import {createSale} from "../../database/services/sale";
 import Sale, {PaymentInfo} from "../../database/models/sale";
+import Menu, {ButtonData} from "./extra/menu";
 
 interface IUsedElements {
     payment: {
-        main: ElementHolder,
         types: ElementHolder[],
-        holders: ElementHolder[]
+        inputs: ElementHolder<HTMLElementType<"input">>[],
+        result: ElementHolder[]
     },
     lastItem: {
         name: ElementHolder,
@@ -24,7 +25,6 @@ interface IUsedElements {
         quantity: ElementHolder,
         price: ElementHolder
     },
-    buttonHolders: ElementHolder<HTMLElementType<"button">>[],
     actionButtons: {
         deleteItem: {
             main: ElementHolder<HTMLElementType<"button">>,
@@ -34,9 +34,14 @@ interface IUsedElements {
     }
 }
 
+interface IUsedMenus {
+    payment: Menu,
+}
+
 export default class ViewPointOfSale extends ViewBase {
     itemsData: ItemData[] = [];
     elements: IUsedElements;
+    menus: IUsedMenus;
     total: {
         quantity: number,
         price: number,
@@ -130,73 +135,61 @@ export default class ViewPointOfSale extends ViewBase {
             if(data.hotkey) button.createChild("hotkey", "span").element.innerText = `(${data.hotkey})`;
         });
 
+        const menus = this.createChild("menus", "div");
+
         /* Elements for submit a sale */
 
-        this.createChild("fade", "div");
-        const payment = this.createChild("payment", "div");
-        const paymentTitle = payment.createChild("title", "span");
-        paymentTitle.element.innerText = "Tela de Pagamento";
-        const paymentTypesWrapper = payment.createChild("types", "div");
-        const paymentTypes = paymentTypesWrapper.createChildren(global.user.settings.paymentTypes.length, "type", "div");
-        paymentTypes.forEach((paymentType, index) => {
-            paymentType.createChild("name", "span").element.innerText = global.user.settings.paymentTypes[index];
-            paymentType.createChild("currency", "span").element.innerText = global.user.settings.currency;
-            const input = paymentType.createChild("value", "input");
-            input.element.placeholder = "0,00";
-        });
-
-        const paymentResult = payment.createChild("result", "div");
-        const paymentData = [
+        const buttonsData: ButtonData[] = [
             {
-                color: "#157F1F",
-                text: "Total"
-            },
-            {
-                color: "#DD403A",
-                text: "Troco"
-            }
-        ];
-        const paymentHolders = paymentResult.createChildren(2, "wrapper", "div");
-        for(const holder of paymentHolders) {
-            const index = paymentHolders.indexOf(holder);
-            const text = holder.createChild("text", "span");
-            text.element.innerText = `${paymentData[index].text}:`;
-            text.element.style.setProperty("--back-color", paymentData[index].color);
-            holder.createChild("currency", "span").element.innerText = global.user.settings.currency;
-            holder.createChild("number", "span");
-        }
-
-        const buttons = paymentResult.createChild("buttons", "div");
-        const buttonsData = [
-            {
-                color: "#e01919",
                 icon: "xmark",
                 text: "Cancelar",
+                class: "cancel",
                 handler: () => this.closePayments()
             },
             {
-                color: "#069E2D",
                 icon: "check",
                 text: "Finalizar",
+                class: "confirm",
                 handler: () => this.finalizePurchase()
             }
-        ]
-        const buttonHolders = buttons.createChildren(buttonsData.length, "button", "button");
-        for(const index in buttonHolders) {
-            const buttonData = buttonsData[index]
-            const holder = buttonHolders[index];
-            holder.createChild("icon", "i", ["fa-solid", `fa-${buttonData.icon}`]);
-            const text = holder.createChild("text", "span");
-            holder.element.style.setProperty("--color", buttonData.color);
-            text.element.innerText = buttonData.text;
-            holder.element.addEventListener("click", buttonData.handler)
-        }
+        ];
+
+        const payment = new Menu("Pagamento", buttonsData, this, menus, ["payment"]);
+        const paymentTypes = payment.elements.fields.createChildren(global.user.settings.paymentTypes.length, "field", "div");
+        const paymentInputs: ElementHolder<HTMLElementType<"input">>[] = [];
+        global.user.settings.paymentTypes.forEach((type, index) => {
+            const holder = paymentTypes[index];
+            holder.createChild("name", "span").element.innerText = type;
+            holder.createChild("currency", "span").element.innerText = global.user.settings.currency;
+            paymentInputs.push(holder.createChild("value", "input"));
+        });
+
+        const paymentData = [
+            {
+                class: "total",
+                text: "Total"
+            },
+            {
+                class: "charge",
+                text: "Troco"
+            }
+        ];
+        const paymentResult = payment.elements.fields.createChildren(paymentData.length, "field", "div", ["result"]);
+        const paymentResultDisplay: ElementHolder[] = [];
+        paymentResult.forEach((holder, index) => {
+            const text = holder.createChild("name", "span", [paymentData[index].class]).element.innerText = paymentData[index].text;;
+            holder.createChild("currency", "span").element.innerText = global.user.settings.currency;
+            paymentResultDisplay.push(holder.createChild("value", "span"));
+
+        });
+        
+        /* Keyboard Handlers */
 
         this.createKeyboardAction(/^[a-zA-Z0-9]$/, () => {
             const active = document.activeElement;
 
             if (active !== searchElement &&
-                !this.checkPayment()) searchElement.focus();
+                !this.menus.payment.check()) searchElement.focus();
         })
 
         this.createKeyboardAction(/^\d$/, (event: KeyboardEvent) => {
@@ -207,7 +200,7 @@ export default class ViewPointOfSale extends ViewBase {
                 if (/^\d+\*\d+$/.test(searchElement.value)) {
                     searchElement.maxLength = searchElement.value.split("*")[0].length + 14;
                 }
-            } else if(this.checkPayment()) {
+            } else if(this.menus.payment.check()) {
                 const paymentInput = paymentTypes
                     .map(type => type.children[2].element)
                     .find(element => element == active) as HTMLInputElement;
@@ -244,7 +237,7 @@ export default class ViewPointOfSale extends ViewBase {
         })
 
         this.createKeyboardAction(/,/, (event: KeyboardEvent) => {
-            if(this.checkPayment()) {
+            if(this.menus.payment.check()) {
                 const active = document.activeElement as HTMLInputElement;
                 if(!paymentTypes.map(type => type.children[2].element).includes(active)) return;
 
@@ -264,13 +257,13 @@ export default class ViewPointOfSale extends ViewBase {
         });
 
         this.createKeyboardAction(/^Escape$/, () => {
-            if(this.checkPayment()) this.closePayments();
+            if(this.menus.payment.check()) this.closePayments();
         });
 
         this.createKeyboardAction(/^Tab$/, (event: KeyboardEvent) => {
             if(!/keyup/.test(event.key)) return;
 
-            if(this.checkPayment()) {
+            if(this.menus.payment.check()) {
                 this.parseActivePaymentInput();
             }
         })
@@ -278,7 +271,7 @@ export default class ViewPointOfSale extends ViewBase {
         this.createKeyboardAction(/^Enter$/, async (event: Input) => {
             if(/keydown/.test(event.type)) return;
 
-            if(this.checkPayment()) {
+            if(this.menus.payment.check()) {
                 this.parseActivePaymentInput();
 
             } else {
@@ -309,7 +302,7 @@ export default class ViewPointOfSale extends ViewBase {
 
         this.createKeyboardAction(/^Delete$/, (event: KeyboardEvent) => {
             if(/keydown/.test(event.type)) return;
-            if(this.checkPayment()) return;
+            if(this.menus.payment.check()) return;
 
             this.deleteCurrent(event.ctrlKey);
             if(event.ctrlKey) {
@@ -321,7 +314,7 @@ export default class ViewPointOfSale extends ViewBase {
         });
 
         this.createKeyboardAction(/^Control$/, (event: KeyboardEvent) => {
-            if(this.checkPayment()) return;
+            if(this.menus.payment.check()) return;
 
             switch(event.type) {
                 case "keydown":
@@ -338,9 +331,9 @@ export default class ViewPointOfSale extends ViewBase {
         
         this.elements = {
             payment: {
-                main: payment,
                 types: paymentTypes,
-                holders: paymentHolders
+                inputs: paymentInputs,
+                result: paymentResultDisplay
             },
             lastItem: {
                 name: itemName,
@@ -353,7 +346,6 @@ export default class ViewPointOfSale extends ViewBase {
                 quantity: totalQuantityNumber,
                 price: totalPriceNumber
             },
-            buttonHolders: buttonHolders,
             actionButtons: {
                 deleteItem: {
                     main: actionButtons[0],
@@ -362,6 +354,10 @@ export default class ViewPointOfSale extends ViewBase {
                 openPayment: actionButtons[1]
             }
         }
+
+        this.menus = {
+            payment: payment,
+        }
     }
 
     async reset() {
@@ -369,13 +365,6 @@ export default class ViewPointOfSale extends ViewBase {
         this.closePayments();
         this.setTotal();
         await this.setLastItem();
-    }
-
-    checkPayment(): boolean {
-        /* 0 - Hidden
-        *  1 - Visible
-        * */
-        return this.elements.payment.main.element.classList.contains("visible");
     }
 
     deleteCurrent(all: boolean = false) {
@@ -450,7 +439,7 @@ export default class ViewPointOfSale extends ViewBase {
             this.total.price += itemData.price.sale * itemData.quantity;
         });
 
-        if(this.checkPayment()) {
+        if(this.menus.payment.check()) {
             this.elements.payment.types.forEach(type => {
                 const {value} = type.children[2].element as HTMLInputElement;
                 this.total.paid += value.length ? cashToInt(value) : 0;
@@ -469,35 +458,31 @@ export default class ViewPointOfSale extends ViewBase {
 
     openPayments() {
         if (this.itemsData.length == 0 ||
-            this.checkPayment()) return;
+            this.menus.payment.check()) return;
 
         this.elements.payment.types.forEach(type => {
             (type.children[2].element as HTMLInputElement).value = "";
         });
 
-        this.elements.payment.main.element.classList.remove("hidden");
-        this.elements.payment.main.element.classList.add("visible");
+        this.menus.payment.open();
         this.elements.payment.types[0].children[2].element.focus();
         this.setResult();
     }
 
     closePayments() {
-        this.elements.payment.main.element.classList.remove("visible");
-        this.elements.payment.main.element.classList.add("hidden");
+        this.menus.payment.close();
         this.clearPayments();
     }
 
     clearPayments() {
-        this.elements.payment.types.forEach(holder => {
-            (holder.children[2] as ElementHolder<HTMLElementType<"input">>).element.value = "";
-        });
+        this.elements.payment.inputs.forEach(holder => holder.element.value = "");
     }
 
     setResult() {
         const total = this.getTotal();
 
-        this.elements.payment.holders[0].children[2].element.innerText = parseToCash(total.price);
-        this.elements.payment.holders[1].children[2].element.innerText = parseToCash(this.total.paid - total.price);
+        this.elements.payment.result[0].element.innerText = parseToCash(total.price);
+        this.elements.payment.result[1].element.innerText = parseToCash(this.total.paid - total.price);
 
         return {
             price: total.price,
@@ -511,7 +496,7 @@ export default class ViewPointOfSale extends ViewBase {
         if(!/,/.test(value)) value = parseInt(value) * 100;
         active.value = parseToCash(value);
         const total = this.setResult();
-        if(total.price <= total.paid) this.elements.buttonHolders[1].element.focus();
+        if(total.price <= total.paid) this.menus.payment.elements.bottomButtons[1].element.focus();
         else {
             const input = this.elements.payment.types.find(type => type.children[2].element === active);
             this.elements.payment.types[this.elements.payment.types.indexOf(input) + 1]?.children[2].element.focus();
