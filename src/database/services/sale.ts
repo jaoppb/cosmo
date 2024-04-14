@@ -31,7 +31,7 @@ function handleQuery(queries: SaleQuery): SaleQuery<SaleItemQuery> {
             })
         })
     });
-    return handledQuery;
+    return handledQuery.$or.length <= 1 ? handledQuery.$or[0] : handledQuery;
 }
 
 export async function createSale(sale: Sale) {
@@ -49,6 +49,9 @@ export async function createSale(sale: Sale) {
 export async function getSales(query: SaleQuery, limit?: number, offset?: number) {
     let handledQuery: SaleQuery<SaleItemQuery>;
     if (query.$or.some(query => Object.keys(query).includes("items"))) handledQuery = handleQuery(query);
+    if (query.$or.length == 1) {
+        query = query.$or[0];
+    }
 
     const sales = collections.sales.find(handledQuery ?? query).sort({timestamp: -1});
     let res: Sale[];

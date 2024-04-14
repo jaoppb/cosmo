@@ -32,7 +32,7 @@ function handleQuery(queries) {
             });
         });
     });
-    return handledQuery;
+    return handledQuery.$or.length <= 1 ? handledQuery.$or[0] : handledQuery;
 }
 async function createSale(sale) {
     await index_1.collections.sales.insertOne(sale);
@@ -48,6 +48,9 @@ async function getSales(query, limit, offset) {
     let handledQuery;
     if (query.$or.some(query => Object.keys(query).includes("items")))
         handledQuery = handleQuery(query);
+    if (query.$or.length == 1) {
+        query = query.$or[0];
+    }
     const sales = index_1.collections.sales.find(handledQuery ?? query).sort({ timestamp: -1 });
     let res;
     if (limit) {
