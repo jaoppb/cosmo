@@ -153,13 +153,18 @@
             gap: 20px;
 
             button {
-                outline: 0;
+                outline: 0 solid gold;
                 width: 100%;
                 padding: 20px 0;
                 border-radius: 20px;
                 border: 1px solid black;
-                transition: 400ms all;
+                transition: 400ms transform, background-color, outline-width;
                 color: white;
+
+                &:focus {
+                    outline-width: 4px;
+                    border-width: 0;
+                }
 
                 .icon {
                     margin-right: 10px;
