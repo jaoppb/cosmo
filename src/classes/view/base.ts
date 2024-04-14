@@ -9,12 +9,12 @@ interface ICSSData {
     element: HTMLLinkElement,
 }
 
-export interface ICSSInput {
+interface ICSSInput {
     filePath: string,
     priority?: number,
 }
 
-class CSSInput implements ICSSInput {
+export class CSSInput implements ICSSInput {
     filePath: string;
     priority: number = 0;
     constructor(filePath: string, priority?: number) {

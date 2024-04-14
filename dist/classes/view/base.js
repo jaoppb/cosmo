@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CSSInput = void 0;
 const holder_1 = require("../element/holder");
 const convert_1 = require("../../shared/convert");
 class CSSInput {
@@ -11,6 +12,7 @@ class CSSInput {
             this.priority = priority;
     }
 }
+exports.CSSInput = CSSInput;
 class ViewBase {
     name;
     manager;
