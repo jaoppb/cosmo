@@ -52,6 +52,12 @@ class ViewManagementBase extends base_1.default {
         const itemsHeaderSelectWrapper = itemsHeader.createChild("select", "div");
         const itemsHeaderSelect = itemsHeaderSelectWrapper.createChild("input", "input");
         itemsHeaderSelect.element.type = "checkbox";
+        itemsHeaderSelect.element.addEventListener("click", () => {
+            itemsList.children.forEach((item) => {
+                const element = item.children[0].children[0].element;
+                element.checked = !element.checked;
+            });
+        });
         const itemsList = itemsWrapper.createChild("list", "div");
         const editButtonsData = [
             {
@@ -109,7 +115,10 @@ class ViewManagementBase extends base_1.default {
                 main: search,
                 input: searchInput,
                 items: {
-                    header: itemsHeader,
+                    header: {
+                        main: itemsHeader,
+                        checkbox: itemsHeaderSelect,
+                    },
                     list: itemsList
                 },
             },

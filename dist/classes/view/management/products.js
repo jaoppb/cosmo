@@ -12,7 +12,7 @@ class ViewManagementProducts extends base_1.default {
         super("products", "./css/management/products.css");
         const placeholderItem = database_1.itemsUtils["placeholder"];
         for (const text of ["Name", "Barcode", "Cost", "Sale", "Stock", "NCM"]) {
-            this.elements.search.items.header.createChild(text.toLowerCase(), "span").element.innerText = text;
+            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
         }
         const editName = this.elements.editMenu.fields.createChild("name", "div", ["field"]);
         const editNameLabel = editName.createChild("label", "span");
@@ -113,6 +113,7 @@ class ViewManagementProducts extends base_1.default {
         const selection = item.createChild("select", "div");
         const input = selection.createChild("input", "input");
         input.element.type = "checkbox";
+        input.element.checked = this.elements.search.items.header.checkbox.element.checked;
         const name = item.createChild("name", "span");
         name.element.innerText = itemData.name;
         const barcode = item.createChild("barcode", "span");

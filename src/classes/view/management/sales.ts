@@ -10,7 +10,7 @@ export default class ViewManagementSales extends ViewManagementBase {
         super("sales", "./css/management/sales.css");
 
         for(const text of ["Data", "Quantidade", "Valor"]) {
-            this.elements.search.items.header.createChild(text.toLowerCase(), "span").element.innerText = text;
+            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
         }
 
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;

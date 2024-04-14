@@ -15,7 +15,10 @@ export interface IManagementUsedElements {
         main: ElementHolder,
         input: ElementHolder<HTMLElementType<"input">>,
         items: {
-            header: ElementHolder,
+            header: {
+                main: ElementHolder,
+                checkbox: ElementHolder<HTMLElementType<"input">>,
+            },
             list: ElementHolder
         },
     },
@@ -74,9 +77,17 @@ export default class ViewManagementBase extends ViewBase {
 
         const itemsWrapper = search.createChild("items", "div");
         const itemsHeader = itemsWrapper.createChild("header", "div");
+
         const itemsHeaderSelectWrapper = itemsHeader.createChild("select", "div");
         const itemsHeaderSelect = itemsHeaderSelectWrapper.createChild("input", "input");
         itemsHeaderSelect.element.type = "checkbox";
+
+        itemsHeaderSelect.element.addEventListener("click", () => {
+            itemsList.children.forEach((item) => {
+                const element = item.children[0].children[0].element as HTMLElementType<"input">;
+                element.checked = !element.checked;
+            });
+        });
 
         const itemsList = itemsWrapper.createChild("list", "div");
 
@@ -138,7 +149,10 @@ export default class ViewManagementBase extends ViewBase {
                 main: search,
                 input: searchInput,
                 items: {
-                    header: itemsHeader,
+                    header: {
+                        main: itemsHeader,
+                        checkbox: itemsHeaderSelect,
+                    },
                     list: itemsList
                 },
             },

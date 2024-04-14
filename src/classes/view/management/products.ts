@@ -26,7 +26,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
         const placeholderItem = itemsUtils["placeholder"];
 
         for(const text of ["Name", "Barcode", "Cost", "Sale", "Stock", "NCM"]) {
-            this.elements.search.items.header.createChild(text.toLowerCase(), "span").element.innerText = text;
+            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
         }
 
         const editName = this.elements.editMenu.fields.createChild("name", "div", ["field"]);
@@ -143,6 +143,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
         const selection = item.createChild("select", "div");
         const input = selection.createChild("input", "input");
         input.element.type = "checkbox";
+        input.element.checked = this.elements.search.items.header.checkbox.element.checked;
 
         const name = item.createChild("name", "span");
         name.element.innerText = itemData.name;
