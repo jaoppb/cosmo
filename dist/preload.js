@@ -26,6 +26,6 @@ window.onload = () => {
     };
     const views = (0, all_1.default)();
     const viewManager = (0, manager_1.default)(elements, views, true);
-    viewManager.setView(views[1]);
+    viewManager.setView(views[0]);
     keyboardHandler.subscribe(viewManager);
 };
