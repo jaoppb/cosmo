@@ -18,12 +18,12 @@ export interface ButtonData {
 
 export default class Menu {
     elements: IUsedElements;
-    constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder, classes?: string[]) {
+    constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder, classes: string[] = []) {
         view.addCSS(new CSSInput("css/extra/menu.css", -100));
-        const menuHolder = parent.createChild("holder", "div", classes);
+        const menuHolder = parent.createChild("holder", "div");
 
         const fade = menuHolder.createChild("fade", "div");
-        const menu = menuHolder.createChild("menu", "div", ["menu"]);
+        const menu = menuHolder.createChild("menu", "div", classes);
         const menuTop = menu.createChild("top", "div");
 
         const menuTitle = menuTop.createChild("title", "span");

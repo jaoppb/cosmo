@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("../base");
 class Menu {
     elements;
-    constructor(title, bottomButtons, view, parent, classes) {
+    constructor(title, bottomButtons, view, parent, classes = []) {
         view.addCSS(new base_1.CSSInput("css/extra/menu.css", -100));
-        const menuHolder = parent.createChild("holder", "div", classes);
+        const menuHolder = parent.createChild("holder", "div");
         const fade = menuHolder.createChild("fade", "div");
-        const menu = menuHolder.createChild("menu", "div", ["menu"]);
+        const menu = menuHolder.createChild("menu", "div", classes);
         const menuTop = menu.createChild("top", "div");
         const menuTitle = menuTop.createChild("title", "span");
         menuTitle.element.innerText = title;
