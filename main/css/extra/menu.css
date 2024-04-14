@@ -4,7 +4,7 @@
     position: absolute;
     top: -200%;
     left: 0;
-    z-index: 1000;
+    z-index: 200;
 
     &.hide {
         animation: hide-menus 400ms forwards;
@@ -94,6 +94,8 @@
                 cursor: pointer;
                 width: 55px;
                 height: 55px;
+                background: transparent;
+                border: 0;
             }
         }
 
