@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const base_1 = require("../base");
 class Menu {
     elements;
     constructor(title, bottomButtons, view, parent, classes) {
-        view.addCSS({
-            filePath: "css/extra/menu.css",
-            priority: -1,
-        });
+        view.addCSS(new base_1.CSSInput("css/extra/menu.css", -100));
         const menuHolder = parent.createChild("holder", "div", classes);
         const fade = menuHolder.createChild("fade", "div");
         const menu = menuHolder.createChild("menu", "div", ["menu"]);

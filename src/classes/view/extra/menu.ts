@@ -1,5 +1,5 @@
 import ElementHolder, {HTMLElementType} from "../../element/holder";
-import ViewBase from "../base";
+import ViewBase, {CSSInput} from "../base";
 
 interface IUsedElements {
     menus: ElementHolder;
@@ -19,10 +19,7 @@ export interface ButtonData {
 export default class Menu {
     elements: IUsedElements;
     constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder, classes?: string[]) {
-        view.addCSS({
-            filePath: "css/extra/menu.css",
-            priority: -1,
-        });
+        view.addCSS(new CSSInput("css/extra/menu.css", -100));
         const menuHolder = parent.createChild("holder", "div", classes);
 
         const fade = menuHolder.createChild("fade", "div");
