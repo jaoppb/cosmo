@@ -82,32 +82,6 @@
                 background-color: rgb(240, 240, 240);
             }
         }
-
-        button.create {
-            background-color: #069E2D;
-
-            &:hover:not(:active) {
-                cursor: pointer;
-                background-color: rgb(20, 170, 50);
-            }
-
-            &:active {
-                transform: scale(.97);
-            }
-        }
-
-        button.delete {
-            background-color: #e01919;
-
-            &:hover:not(:active) {
-                cursor: pointer;
-                background-color: rgb(255, 80, 80);
-            }
-
-            &:active {
-                transform: scale(.97);
-            }
-        }
     }
 
     .items {

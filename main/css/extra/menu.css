@@ -181,15 +181,6 @@
                     opacity: .9;
                 }
             }
-
-            .delete {
-                background-color: #e01919;
-            }
-
-            .save {
-                background-color: #069E2D;
-                opacity: .94;
-            }
         }
     }
 }

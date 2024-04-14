@@ -324,14 +324,6 @@ input {
             cursor: pointer;
             transition: all 300ms;
 
-            &.cancel {
-                background-color: #E01919;
-            }
-
-            &.confirm {
-                background-color: #069E2D;
-            }
-
             &:hover {
                 transform: scale(1.03);
             }

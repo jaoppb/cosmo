@@ -109,3 +109,31 @@ main {
     width: calc(100% - 100px);
     overflow: hidden;
 }
+
+button {
+    &.cancel, &.delete {
+        color: white;
+        background-color: #E01919;
+
+        &:hover:not(:active) {
+            cursor: pointer;
+        }
+
+        &:active {
+            transform: scale(.97);
+        }
+    }
+
+    &.confirm, &.save, &.create {
+        color: white;
+        background-color: #069E2D;
+
+        &:hover:not(:active) {
+            cursor: pointer;
+        }
+
+        &:active {
+            transform: scale(.97);
+        }
+    }
+}
