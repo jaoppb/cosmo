@@ -2,6 +2,7 @@ import ElementHolder, {HTMLElementType} from "../../element/holder";
 import ViewBase from "../base";
 
 interface IUsedElements {
+    menus: ElementHolder;
     main: ElementHolder,
     closeButton: ElementHolder<HTMLElementType<"button">>,
     fields: ElementHolder<HTMLElementType<"div">>,
@@ -49,13 +50,14 @@ export default class Menu {
         });
 
         this.elements = {
+            menus: parent,
             main: menu,
             closeButton: menuClose,
             fields: menuFields,
             bottomButtons: menuBottomButtons,
         }
     }
-    
+
     close() {
         if(!this.check()) return;
 
@@ -63,6 +65,11 @@ export default class Menu {
         this.elements.main.element.classList.add("hide");
         setTimeout(() => this.elements.main.element.classList.remove("hide"), 500);
         document.querySelector(".item.current")?.classList.remove("current");
+
+        if(!this.checkMenus()) {
+            this.elements.menus.element.classList.remove("show");
+            this.elements.menus.element.classList.add("hide");
+        }
     }
 
     open() {
@@ -70,9 +77,18 @@ export default class Menu {
 
         this.elements.main.element.classList.remove("hide");
         this.elements.main.element.classList.add("show");
+
+        if(this.checkMenus()) {
+            this.elements.menus.element.classList.remove("hide");
+            this.elements.menus.element.classList.add("show");
+        }
     }
 
     check(): boolean {
         return this.elements.main.element.classList.contains("show");
+    }
+
+    checkMenus(): boolean {
+        return document.querySelector(".menus:has(.show)") !== null;
     }
 }

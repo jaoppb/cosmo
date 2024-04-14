@@ -27,6 +27,7 @@ class Menu {
             menuBottomButtons.push(button);
         });
         this.elements = {
+            menus: parent,
             main: menu,
             closeButton: menuClose,
             fields: menuFields,
@@ -40,15 +41,26 @@ class Menu {
         this.elements.main.element.classList.add("hide");
         setTimeout(() => this.elements.main.element.classList.remove("hide"), 500);
         document.querySelector(".item.current")?.classList.remove("current");
+        if (!this.checkMenus()) {
+            this.elements.menus.element.classList.remove("show");
+            this.elements.menus.element.classList.add("hide");
+        }
     }
     open() {
         if (this.check())
             return;
         this.elements.main.element.classList.remove("hide");
         this.elements.main.element.classList.add("show");
+        if (this.checkMenus()) {
+            this.elements.menus.element.classList.remove("hide");
+            this.elements.menus.element.classList.add("show");
+        }
     }
     check() {
         return this.elements.main.element.classList.contains("show");
+    }
+    checkMenus() {
+        return document.querySelector(".menus:has(.show)") !== null;
     }
 }
 exports.default = Menu;
