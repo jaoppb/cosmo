@@ -19,7 +19,7 @@ class ButtonData {
 exports.ButtonData = ButtonData;
 class Menu {
     elements;
-    constructor(title, bottomButtons, view, parent, classes = []) {
+    constructor(title, bottomButtons, view, parent, classes = [], closeButton = true) {
         view.addCSS(new base_1.CSSInput("css/extra/menu.css", -100));
         const menuHolder = parent.createChild("holder", "div");
         const fade = menuHolder.createChild("fade", "div");
@@ -27,12 +27,15 @@ class Menu {
         const menuTop = menu.createChild("top", "div");
         const menuTitle = menuTop.createChild("title", "span");
         menuTitle.element.innerText = title;
-        const menuClose = menuTop.createChild("close", "button");
-        const menuCloseIcon = menuClose.createChild("icon", "i");
-        menuCloseIcon.element.classList.add("fa-solid", "fa-close");
-        menuClose.element.addEventListener("click", () => {
-            this.close();
-        });
+        let menuClose;
+        if (closeButton) {
+            menuClose = menuTop.createChild("close", "button");
+            const menuCloseIcon = menuClose.createChild("icon", "i");
+            menuCloseIcon.element.classList.add("fa-solid", "fa-close");
+            menuClose.element.addEventListener("click", () => {
+                this.close();
+            });
+        }
         const menuFields = menu.createChild("fields", "div");
         const menuBottom = menu.createChild("bottom", "div");
         const menuBottomButtons = [];

@@ -34,7 +34,7 @@ export class ButtonData implements IButtonData {
 
 export default class Menu {
     elements: IUsedElements;
-    constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder, classes: string[] = []) {
+    constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder, classes: string[] = [], closeButton: boolean = true) {
         view.addCSS(new CSSInput("css/extra/menu.css", -100));
         const menuHolder = parent.createChild("holder", "div");
 
@@ -45,13 +45,16 @@ export default class Menu {
         const menuTitle = menuTop.createChild("title", "span");
         menuTitle.element.innerText = title;
 
-        const menuClose = menuTop.createChild("close", "button");
-        const menuCloseIcon = menuClose.createChild("icon", "i");
-        menuCloseIcon.element.classList.add("fa-solid", "fa-close");
+        let menuClose: ElementHolder<HTMLElementType<"button">>;
+        if(closeButton) {
+            menuClose = menuTop.createChild("close", "button");
+            const menuCloseIcon = menuClose.createChild("icon", "i");
+            menuCloseIcon.element.classList.add("fa-solid", "fa-close");
 
-        menuClose.element.addEventListener("click", () => {
-            this.close();
-        });
+            menuClose.element.addEventListener("click", () => {
+                this.close();
+            });
+        }
 
         const menuFields = menu.createChild("fields", "div");
 
