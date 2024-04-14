@@ -18,9 +18,9 @@ export interface ButtonData {
 
 export default class Menu {
     elements: IUsedElements;
-    constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder) {
+    constructor(title: string, bottomButtons: ButtonData[], view: ViewBase, parent: ElementHolder, classes?: string[]) {
         view.addCSS("css/extra/menu.css");
-        const menuHolder = parent.createChild("holder", "div");
+        const menuHolder = parent.createChild("holder", "div", classes);
 
         const fade = menuHolder.createChild("fade", "div");
         const menu = menuHolder.createChild("menu", "div", ["menu"]);

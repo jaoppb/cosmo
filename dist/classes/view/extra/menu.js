@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class Menu {
     elements;
-    constructor(title, bottomButtons, view, parent) {
+    constructor(title, bottomButtons, view, parent, classes) {
         view.addCSS("css/extra/menu.css");
-        const menuHolder = parent.createChild("holder", "div");
+        const menuHolder = parent.createChild("holder", "div", classes);
         const fade = menuHolder.createChild("fade", "div");
         const menu = menuHolder.createChild("menu", "div", ["menu"]);
         const menuTop = menu.createChild("top", "div");
