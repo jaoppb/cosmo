@@ -2,37 +2,52 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const holder_1 = require("../element/holder");
 const convert_1 = require("../../shared/convert");
+class CSSInput {
+    filePath;
+    priority = 0;
+    constructor(filePath, priority) {
+        this.filePath = filePath;
+        if (priority)
+            this.priority = priority;
+    }
+}
 class ViewBase {
     name;
     manager;
     subManager;
     mainElement;
-    css = [];
+    css = {};
     keyboardActions = [];
     constructor(name, cssFilePaths) {
         this.name = (0, convert_1.camelCaseToKebab)(name);
         this.mainElement = new holder_1.default(this.name, document.createElement("div"));
-        if (cssFilePaths) {
-            if (!Array.isArray(cssFilePaths))
-                cssFilePaths = [cssFilePaths];
-            this.addCSS(...cssFilePaths);
-        }
+        if (cssFilePaths)
+            this.addCSS(cssFilePaths);
     }
     getMainElement = () => this.mainElement;
     checkCSS(cssPath) {
-        return this.css.some(data => data.filePath == cssPath);
+        return Object.values(this.css).some(dataArray => dataArray.some(data => data.filePath == cssPath));
     }
-    addCSS(...cssPaths) {
+    addCSS(cssInputs) {
+        if (!Array.isArray(cssInputs))
+            cssInputs = [cssInputs];
         let result = 0;
-        for (const cssPath of cssPaths) {
-            if (this.checkCSS(cssPath))
+        for (const cssInput of cssInputs.map(cssFilePath => {
+            if (cssFilePath instanceof CSSInput)
+                return cssFilePath;
+            else
+                return new CSSInput(cssFilePath);
+        })) {
+            if (this.checkCSS(cssInput.filePath))
                 continue;
             const linkElement = document.createElement("link");
             linkElement.rel = "stylesheet";
             linkElement.type = "text/css";
-            linkElement.href = cssPath;
-            this.css.push({
-                filePath: cssPath,
+            linkElement.href = cssInput.filePath;
+            if (this.css[cssInput.priority ?? 0] == undefined)
+                this.css[cssInput.priority ?? 0] = [];
+            this.css[cssInput.priority ?? 0].push({
+                filePath: cssInput.filePath,
                 element: linkElement,
             });
             result++;
@@ -49,8 +64,10 @@ class ViewBase {
         return this.mainElement.createChildren(quantity, name, tag);
     }
     load(parent) {
-        if (this.css.length)
-            this.css.forEach(css => document.head.appendChild(css.element));
+        if (Object.values(this.css).length > 0) {
+            const keys = Object.keys(this.css).map(key => parseInt(key)).toSorted();
+            keys.forEach(key => this.css[key].forEach(css => document.head.appendChild(css.element)));
+        }
         if (this.manager.isRootManager())
             document.title = (0, convert_1.camelCaseToTitle)(this.name);
         if (this.subManager)
@@ -59,8 +76,9 @@ class ViewBase {
     }
     unload() {
         this.mainElement.element.remove();
-        if (this.css.length)
-            this.css.forEach(css => css.element.remove());
+        if (Object.values(this.css).length > 0) {
+            Object.values(this.css).forEach(cssArray => cssArray.forEach(css => css.element.remove()));
+        }
         if (this.subManager)
             this.subManager.unload();
     }

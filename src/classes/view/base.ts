@@ -3,11 +3,24 @@ import ElementHolder, {HTMLElementType} from "../element/holder";
 import {camelCaseToKebab, camelCaseToTitle} from "../../shared/convert";
 import SubViewManager from "./manager/sub";
 import {IKeyboard} from "../handler/keyboard";
-import {Input} from "electron";
 
 interface ICSSData {
     filePath: string,
-    element: HTMLLinkElement
+    element: HTMLLinkElement,
+}
+
+export interface ICSSInput {
+    filePath: string,
+    priority?: number,
+}
+
+class CSSInput implements ICSSInput {
+    filePath: string;
+    priority: number = 0;
+    constructor(filePath: string, priority?: number) {
+        this.filePath = filePath;
+        if(priority) this.priority = priority;
+    }
 }
 
 export default class ViewBase implements IKeyboard {
@@ -15,38 +28,43 @@ export default class ViewBase implements IKeyboard {
     private manager: ViewManager;
     private subManager: SubViewManager;
     private readonly mainElement: ElementHolder;
-    private readonly css: ICSSData[] = [];
+    private readonly css: Record<number, ICSSData[]> = {};
     private readonly keyboardActions: [RegExp, Function][] = [];
 
-    constructor(name: string, cssFilePaths?: string | string[]) {
+    constructor(name: string, cssFilePaths?: CSSInput | string | (CSSInput | string)[]) {
         this.name = camelCaseToKebab(name);
         this.mainElement = new ElementHolder(
             this.name,
             document.createElement("div")
         );
-        if(cssFilePaths) {
-            if(!Array.isArray(cssFilePaths)) cssFilePaths = [cssFilePaths];
-            this.addCSS(...cssFilePaths);
-        }
+        if(cssFilePaths) this.addCSS(cssFilePaths);
     }
 
     getMainElement = () => this.mainElement;
 
     checkCSS(cssPath: string) {
-        return this.css.some(data => data.filePath == cssPath);
+        return Object.values(this.css).some(dataArray =>
+            dataArray.some(data => data.filePath == cssPath)
+        );
     }
 
-    addCSS(...cssPaths: string[]) {
+    addCSS(cssInputs: CSSInput | string | (CSSInput | string)[]) {
+        if(!Array.isArray(cssInputs)) cssInputs = [cssInputs];
+
         let result = 0;
-        for(const cssPath of cssPaths) {
-            if(this.checkCSS(cssPath)) continue;
+        for(const cssInput of cssInputs.map(cssFilePath => {
+            if(cssFilePath instanceof CSSInput) return cssFilePath;
+            else return new CSSInput(cssFilePath);
+        })) {
+            if(this.checkCSS(cssInput.filePath)) continue;
 
             const linkElement = document.createElement("link");
             linkElement.rel = "stylesheet";
             linkElement.type = "text/css";
-            linkElement.href = cssPath;
-            this.css.push({
-                filePath: cssPath,
+            linkElement.href = cssInput.filePath;
+            if(this.css[cssInput.priority ?? 0] == undefined) this.css[cssInput.priority ?? 0] = [];
+            this.css[cssInput.priority ?? 0].push({
+                filePath: cssInput.filePath,
                 element: linkElement,
             });
             result++;
@@ -67,7 +85,12 @@ export default class ViewBase implements IKeyboard {
     }
 
     load(parent: HTMLElement) {
-        if(this.css.length) this.css.forEach(css => document.head.appendChild(css.element));
+        if(Object.values(this.css).length > 0) {
+            const keys = Object.keys(this.css).map(key => parseInt(key)).toSorted();
+            keys.forEach(key =>
+                this.css[key].forEach(css => document.head.appendChild(css.element))
+            );
+        }
         if(this.manager.isRootManager()) document.title = camelCaseToTitle(this.name);
         if(this.subManager) this.subManager.load();
         setTimeout(() => parent.appendChild(this.mainElement.element), 10)
@@ -75,7 +98,11 @@ export default class ViewBase implements IKeyboard {
 
     unload() {
         this.mainElement.element.remove();
-        if(this.css.length) this.css.forEach(css => css.element.remove());
+        if(Object.values(this.css).length > 0) {
+            Object.values(this.css).forEach(cssArray =>
+                cssArray.forEach(css => css.element.remove())
+            );
+        }
         if(this.subManager) this.subManager.unload();
     }
 
