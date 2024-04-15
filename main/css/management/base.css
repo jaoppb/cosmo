@@ -130,7 +130,7 @@
                 cursor: pointer;
             }
 
-            .item:not(:active) {
+            .item:not(:active):not(.current) {
                 cursor: pointer;
             }
 

@@ -5,7 +5,7 @@ const sale_1 = require("../../../database/services/sale");
 const convert_1 = require("../../../shared/convert");
 class ViewManagementSales extends base_1.default {
     itemQuery = { $or: [{}] };
-    currentItem = {};
+    trackingItem = {};
     constructor() {
         super("sales", "./css/management/sales.css");
         for (const text of ["Data", "Quantidade", "Valor"]) {
@@ -34,7 +34,7 @@ class ViewManagementSales extends base_1.default {
         const priceNumber = price.createChild("number", "span");
         priceNumber.element.innerText = (0, convert_1.parseToCash)(itemData.total.price);
         item.element.addEventListener("click", (event) => {
-            this.itemClick(item, input, itemData, event);
+            this.selectItem(item, input, itemData, event);
         });
     }
     queryFromInput() {
@@ -65,9 +65,8 @@ class ViewManagementSales extends base_1.default {
         }
         this.loadItems();
     }
-    selectItem(itemData) {
+    editItem() {
         this.menus.edit.open();
-        this.currentItem = itemData;
     }
 }
 exports.default = ViewManagementSales;

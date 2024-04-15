@@ -14,14 +14,14 @@ class ViewManagementBase extends base_1.default {
     ;
     loadItems() { }
     ;
-    selectItem(...args) { }
+    editItem() { }
     ;
     offset = 0;
     batchSize = 20;
     elements;
     menus;
     itemQuery;
-    currentItem;
+    trackingItem;
     constructor(name, cssPathFile) {
         if (!Array.isArray(cssPathFile))
             cssPathFile = [cssPathFile];
@@ -101,8 +101,40 @@ class ViewManagementBase extends base_1.default {
         this.createKeyboardAction(/^Enter$/, (event) => {
             if (/keydown/.test(event.type))
                 return;
-            if (!this.menus.edit.check())
-                this.queryFromInput();
+            if (!this.menus.edit.check()) {
+                if (document.activeElement === this.elements.search.input.element)
+                    this.queryFromInput();
+                else
+                    this.editItem();
+            }
+        });
+        this.createKeyboardAction(/^Escape$/, (event) => {
+            this.menus.edit.close();
+        });
+        this.createKeyboardAction(/^Arrow(Down|Up)$/, (event) => {
+            event.preventDefault();
+            if (/keydown/.test(event.type) && !event.repeat)
+                return;
+            const current = document.querySelector(".list .item.current");
+            if (current) {
+                const next = document.querySelector(event.key == "ArrowDown" ?
+                    ".list .item.current + .item" :
+                    ".list .item:has(+ .current)");
+                const listRect = document.querySelector(".list").getBoundingClientRect();
+                if (next) {
+                    next.click();
+                    const nextRect = next.getBoundingClientRect();
+                    if (nextRect.y <= listRect.y ||
+                        nextRect.bottom >= listRect.bottom) {
+                        next.scrollIntoView(!event.repeat ? {
+                            behavior: "smooth",
+                            block: event.key == "ArrowDown" ? "end" : "start"
+                        } : undefined);
+                    }
+                }
+            }
+            else
+                document.querySelector(".list .item:first-child")?.click();
         });
         this.elements = {
             editMenu: {
@@ -140,7 +172,7 @@ class ViewManagementBase extends base_1.default {
     clearItems() {
         this.elements.search.items.list.deleteChildren();
     }
-    itemClick(item, checkbox, itemData, event) {
+    selectItem(item, checkbox, itemData, event) {
         if (event.target == checkbox.element)
             return;
         const current = document.querySelector(".item.current");
@@ -149,7 +181,7 @@ class ViewManagementBase extends base_1.default {
         if (current)
             current.classList.remove("current");
         item.element.classList.add("current");
-        this.selectItem(itemData);
+        this.trackingItem = itemData;
     }
     load(parent) {
         super.load(parent);

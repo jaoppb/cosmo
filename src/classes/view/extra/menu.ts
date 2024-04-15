@@ -92,7 +92,6 @@ export default class Menu {
         this.elements.main.element.classList.remove("show");
         this.elements.main.element.classList.add("hide");
         setTimeout(() => this.elements.main.element.classList.remove("hide"), 500);
-        document.querySelector(".item.current")?.classList.remove("current");
 
         if(!this.checkMenus()) {
             this.elements.menus.element.classList.remove("show");

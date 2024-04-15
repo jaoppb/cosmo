@@ -3,6 +3,7 @@ import ElementHolder, {HTMLElementType} from "../../element/holder";
 import {CollectionTypes} from "../../../database";
 import {title} from "../../../shared/convert";
 import Menu, {ButtonData} from "../extra/menu";
+import {FindCursor} from "mongodb";
 
 export interface IManagementUsedElements {
     editMenu: {
@@ -35,13 +36,13 @@ export default class ViewManagementBase extends ViewBase {
     createItem(): void {};
     deleteItem(): void {};
     loadItems(): void {};
-    selectItem(...args: any[]): void {};
+    editItem(): void {};
     offset: number = 0;
     batchSize: number = 20;
     elements: IManagementUsedElements;
     menus: IUsedMenu;
     itemQuery: CollectionTypes;
-    currentItem: CollectionTypes;
+    trackingItem: CollectionTypes;
 
     constructor(name: string, cssPathFile?: string | string[]) {
         if(!Array.isArray(cssPathFile)) cssPathFile = [cssPathFile];
@@ -136,8 +137,43 @@ export default class ViewManagementBase extends ViewBase {
         this.createKeyboardAction(/^Enter$/, (event: KeyboardEvent) => {
             if(/keydown/.test(event.type)) return;
 
-            if(!this.menus.edit.check()) this.queryFromInput();
+            if(!this.menus.edit.check()) {
+                if(document.activeElement === this.elements.search.input.element) this.queryFromInput();
+                else this.editItem();
+            }
         });
+
+        this.createKeyboardAction(/^Escape$/, (event: KeyboardEvent) => {
+            this.menus.edit.close();
+        });
+
+        this.createKeyboardAction(/^Arrow(Down|Up)$/, (event: KeyboardEvent) => {
+            event.preventDefault();
+            if(/keydown/.test(event.type) && !event.repeat) return;
+
+            const current = document.querySelector(".list .item.current");
+            if(current) {
+                const next = document.querySelector(
+                    event.key == "ArrowDown" ?
+                        ".list .item.current + .item" :
+                        ".list .item:has(+ .current)"
+                ) as HTMLElement;
+                const listRect = (document.querySelector(".list") as HTMLElement).getBoundingClientRect();
+                if (next) {
+                    next.click();
+                    const nextRect = next.getBoundingClientRect();
+                    if (
+                        nextRect.y <= listRect.y ||
+                        nextRect.bottom >= listRect.bottom
+                    ) {
+                        next.scrollIntoView(!event.repeat ? {
+                            behavior: "smooth",
+                            block: event.key == "ArrowDown" ? "end" : "start"
+                        } : undefined);
+                    }
+                }
+            } else (document.querySelector(".list .item:first-child") as HTMLElement)?.click()
+        })
 
         this.elements = {
             editMenu: {
@@ -176,13 +212,13 @@ export default class ViewManagementBase extends ViewBase {
         this.elements.search.items.list.deleteChildren();
     }
 
-    itemClick(item: ElementHolder, checkbox: ElementHolder, itemData: CollectionTypes, event: MouseEvent) {
+    selectItem(item: ElementHolder, checkbox: ElementHolder, itemData: CollectionTypes, event: MouseEvent) {
         if(event.target == checkbox.element) return;
         const current = document.querySelector(".item.current");
         if(current === undefined || current === item.element) return;
         if(current) current.classList.remove("current");
         item.element.classList.add("current");
-        this.selectItem(itemData);
+        this.trackingItem = itemData;
     }
 
     load(parent: HTMLElement) {

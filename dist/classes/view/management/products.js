@@ -7,7 +7,7 @@ const item_2 = require("../../../database/services/item");
 const base_1 = require("./base");
 class ViewManagementProducts extends base_1.default {
     itemQuery = {};
-    currentItem = {};
+    trackingItem = {};
     constructor() {
         super("products", "./css/management/products.css");
         const placeholderItem = database_1.itemsUtils["placeholder"];
@@ -63,9 +63,6 @@ class ViewManagementProducts extends base_1.default {
                     event.preventDefault();
             }
         });
-        this.createKeyboardAction(/^Escape$/, (event) => {
-            this.menus.edit.close();
-        });
         this.elements.inputs = {
             name: editNameInput,
             barcode: editBarcodeInput,
@@ -76,7 +73,7 @@ class ViewManagementProducts extends base_1.default {
         };
     }
     deleteItem() {
-        (0, item_2.deleteItem)(this.currentItem).then(ok => {
+        (0, item_2.deleteItem)(this.trackingItem).then(ok => {
             if (ok) {
                 this.reset();
             }
@@ -92,7 +89,7 @@ class ViewManagementProducts extends base_1.default {
                 stock: parseInt(this.elements.inputs.stock.element.value),
                 ncm: (0, item_1.NCM)(this.elements.inputs.ncm.element.value)
             };
-            (0, item_2.updateItem)(this.currentItem, updatedItem).then(ok => {
+            (0, item_2.updateItem)(this.trackingItem, updatedItem).then(ok => {
                 if (ok) {
                     this.reset();
                 }
@@ -134,7 +131,7 @@ class ViewManagementProducts extends base_1.default {
         if (itemData.ncm)
             ncm.element.innerText = (0, convert_1.parseNCM)(itemData.ncm);
         item.element.addEventListener("click", (event) => {
-            this.itemClick(item, input, itemData, event);
+            this.selectItem(item, input, itemData, event);
         });
     }
     queryFromInput() {
@@ -154,16 +151,15 @@ class ViewManagementProducts extends base_1.default {
         }
         this.loadItems();
     }
-    selectItem(itemData) {
-        this.elements.inputs.name.element.value = itemData.name;
-        this.elements.inputs.barcode.element.value = itemData.barcode;
-        this.elements.inputs.cost.element.value = (0, convert_1.parseToCash)(itemData.price.cost);
-        this.elements.inputs.sale.element.value = (0, convert_1.parseToCash)(itemData.price.sale);
-        this.elements.inputs.stock.element.value = itemData.stock.toString();
-        if (itemData.ncm)
-            this.elements.inputs.ncm.element.value = (0, convert_1.parseNCM)(itemData.ncm);
+    editItem() {
+        this.elements.inputs.name.element.value = this.trackingItem.name;
+        this.elements.inputs.barcode.element.value = this.trackingItem.barcode;
+        this.elements.inputs.cost.element.value = (0, convert_1.parseToCash)(this.trackingItem.price.cost);
+        this.elements.inputs.sale.element.value = (0, convert_1.parseToCash)(this.trackingItem.price.sale);
+        this.elements.inputs.stock.element.value = this.trackingItem.stock.toString();
+        if (this.trackingItem.ncm)
+            this.elements.inputs.ncm.element.value = (0, convert_1.parseNCM)(this.trackingItem.ncm);
         this.menus.edit.open();
-        this.currentItem = itemData;
     }
 }
 exports.default = ViewManagementProducts;

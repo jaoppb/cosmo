@@ -5,7 +5,7 @@ import {cashToInt, parseToCash} from "../../../shared/convert";
 
 export default class ViewManagementSales extends ViewManagementBase {
     itemQuery: SaleQuery = {$or: [{}]};
-    currentItem: ISale = {};
+    trackingItem: ISale = {};
     constructor() {
         super("sales", "./css/management/sales.css");
 
@@ -43,7 +43,7 @@ export default class ViewManagementSales extends ViewManagementBase {
         priceNumber.element.innerText = parseToCash(itemData.total.price);
 
         item.element.addEventListener("click", (event: MouseEvent) => {
-            this.itemClick(item, input, itemData, event);
+            this.selectItem(item, input, itemData, event);
         });
     }
 
@@ -74,8 +74,7 @@ export default class ViewManagementSales extends ViewManagementBase {
         this.loadItems();
     }
 
-    selectItem(itemData: ISale) {
+    editItem() {
         this.menus.edit.open();
-        this.currentItem = itemData;
     }
 }

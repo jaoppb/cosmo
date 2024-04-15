@@ -19,7 +19,7 @@ interface IUsedElements extends IManagementUsedElements {
 
 export default class ViewManagementProducts extends ViewManagementBase {
     itemQuery: IItem = {};
-    currentItem: IItem = {};
+    trackingItem: IItem = {};
     declare elements: IUsedElements;
     constructor() {
         super("products", "./css/management/products.css");
@@ -87,10 +87,6 @@ export default class ViewManagementProducts extends ViewManagementBase {
             }
         });
 
-        this.createKeyboardAction(/^Escape$/, (event: KeyboardEvent) => {
-            this.menus.edit.close();
-        });
-
         this.elements.inputs = {
             name: editNameInput,
             barcode: editBarcodeInput,
@@ -102,7 +98,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
     }
 
     deleteItem() {
-        deleteItem(this.currentItem).then(ok => {
+        deleteItem(this.trackingItem).then(ok => {
             if(ok) {
                 this.reset();
             }
@@ -120,7 +116,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
                 ncm: NCM(this.elements.inputs.ncm.element.value)
             };
 
-            updateItem(this.currentItem, updatedItem).then(ok => {
+            updateItem(this.trackingItem, updatedItem).then(ok => {
                 if (ok) {
                     this.reset();
                 }
@@ -170,7 +166,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
         if(itemData.ncm) ncm.element.innerText = parseNCM(itemData.ncm);
 
         item.element.addEventListener("click", (event: MouseEvent) => {
-            this.itemClick(item, input, itemData, event);
+            this.selectItem(item, input, itemData, event);
         });
     }
 
@@ -192,14 +188,13 @@ export default class ViewManagementProducts extends ViewManagementBase {
         this.loadItems();
     }
 
-    selectItem(itemData: IItem) {
-        this.elements.inputs.name.element.value = itemData.name;
-        this.elements.inputs.barcode.element.value = itemData.barcode;
-        this.elements.inputs.cost.element.value = parseToCash(itemData.price.cost);
-        this.elements.inputs.sale.element.value = parseToCash(itemData.price.sale);
-        this.elements.inputs.stock.element.value = itemData.stock.toString();
-        if(itemData.ncm) this.elements.inputs.ncm.element.value = parseNCM(itemData.ncm);
+    editItem() {
+        this.elements.inputs.name.element.value = this.trackingItem.name;
+        this.elements.inputs.barcode.element.value = this.trackingItem.barcode;
+        this.elements.inputs.cost.element.value = parseToCash(this.trackingItem.price.cost);
+        this.elements.inputs.sale.element.value = parseToCash(this.trackingItem.price.sale);
+        this.elements.inputs.stock.element.value = this.trackingItem.stock.toString();
+        if(this.trackingItem.ncm) this.elements.inputs.ncm.element.value = parseNCM(this.trackingItem.ncm);
         this.menus.edit.open();
-        this.currentItem = itemData;
     }
 }
