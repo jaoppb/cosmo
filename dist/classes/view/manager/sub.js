@@ -13,7 +13,6 @@ class SubViewManager extends index_1.default {
         if (this.getCurrent() === undefined)
             return false;
         this.getViews()[this.getCurrent()].unload();
-        this.clearCurrent();
         return true;
     }
 }

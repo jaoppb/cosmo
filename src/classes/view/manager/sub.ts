@@ -14,7 +14,6 @@ export default class SubViewManager extends ViewManager {
     unload() {
         if(this.getCurrent() === undefined) return false;
         this.getViews()[this.getCurrent()].unload();
-        this.clearCurrent();
         return true;
     }
 }

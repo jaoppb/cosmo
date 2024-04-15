@@ -48,7 +48,7 @@ export default class ViewManager implements IKeyboard{
 
     setView(view: ViewBase) {
         if(!this.views.includes(view)) return false;
-        if(this.views[this.current] == view) return false;
+        if(this.isRootManager() && this.views[this.current] == view) return false;
         this.views[this.current]?.unload();
         this.current = this.views.indexOf(view);
         this.views[this.current].load(this.elements.parent);

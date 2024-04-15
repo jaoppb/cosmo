@@ -157,7 +157,7 @@ class ViewManagementBase extends base_1.default {
     }
     unload() {
         super.unload();
-        this.clearItems();
+        this.reset();
     }
 }
 exports.default = ViewManagementBase;

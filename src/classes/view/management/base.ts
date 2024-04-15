@@ -192,6 +192,6 @@ export default class ViewManagementBase extends ViewBase {
 
     unload() {
         super.unload();
-        this.clearItems();
+        this.reset();
     }
 }

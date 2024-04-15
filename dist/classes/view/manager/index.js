@@ -38,7 +38,7 @@ class ViewManager {
     setView(view) {
         if (!this.views.includes(view))
             return false;
-        if (this.views[this.current] == view)
+        if (this.isRootManager() && this.views[this.current] == view)
             return false;
         this.views[this.current]?.unload();
         this.current = this.views.indexOf(view);
