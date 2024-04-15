@@ -96,12 +96,14 @@ export default class ViewManagementBase extends ViewBase {
                 text: "Apagar",
                 class: "delete",
                 icon: "fa-trash-can",
+                confirm: true,
                 handler: () => this.deleteItem()
             },
             {
                 text: "Salvar",
                 class: "save",
                 icon: "fa-check",
+                confirm: true,
                 handler: () => this.createItem()
             }
         ];
@@ -134,8 +136,7 @@ export default class ViewManagementBase extends ViewBase {
         this.createKeyboardAction(/^Enter$/, (event: KeyboardEvent) => {
             if(/keydown/.test(event.type)) return;
 
-            if(this.menus.edit.check()) this.saveItem();
-            else this.queryFromInput();
+            if(!this.menus.edit.check()) this.queryFromInput();
         });
 
         this.elements = {

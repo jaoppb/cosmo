@@ -64,12 +64,14 @@ class ViewManagementBase extends base_1.default {
                 text: "Apagar",
                 class: "delete",
                 icon: "fa-trash-can",
+                confirm: true,
                 handler: () => this.deleteItem()
             },
             {
                 text: "Salvar",
                 class: "save",
                 icon: "fa-check",
+                confirm: true,
                 handler: () => this.createItem()
             }
         ];
@@ -99,9 +101,7 @@ class ViewManagementBase extends base_1.default {
         this.createKeyboardAction(/^Enter$/, (event) => {
             if (/keydown/.test(event.type))
                 return;
-            if (this.menus.edit.check())
-                this.saveItem();
-            else
+            if (!this.menus.edit.check())
                 this.queryFromInput();
         });
         this.elements = {
