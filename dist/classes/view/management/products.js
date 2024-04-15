@@ -91,7 +91,7 @@ class ViewManagementProducts extends base_1.default {
             };
             (0, item_2.updateItem)(this.trackingItem, updatedItem).then(ok => {
                 if (ok) {
-                    this.reset();
+                    this.reset(false);
                 }
             });
         }

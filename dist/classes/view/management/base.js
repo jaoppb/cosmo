@@ -72,7 +72,7 @@ class ViewManagementBase extends base_1.default {
                 class: "save",
                 icon: "fa-check",
                 confirm: true,
-                handler: () => this.createItem()
+                handler: () => this.saveItem()
             }
         ];
         const edit = new menu_1.default("Editar", editButtonsData, this, menus);
@@ -107,6 +107,8 @@ class ViewManagementBase extends base_1.default {
                 else
                     this.editItem();
             }
+            else
+                this.menus.edit.elements.bottomButtons[1].element.click();
         });
         this.createKeyboardAction(/^Escape$/, (event) => {
             this.menus.edit.close();
@@ -160,14 +162,17 @@ class ViewManagementBase extends base_1.default {
             create: create,
         };
     }
-    reset() {
-        this.clearItems();
-        this.offset = 0;
-        if (this.elements.search.input.element.value.length > 0)
-            this.queryFromInput();
-        else
-            this.loadItems();
+    reset(search = true) {
+        if (search) {
+            this.clearItems();
+            this.offset = 0;
+            if (this.elements.search.input.element.value.length > 0)
+                this.queryFromInput();
+            else
+                this.loadItems();
+        }
         this.menus.edit.close();
+        this.trackingItem = null;
     }
     clearItems() {
         this.elements.search.items.list.deleteChildren();

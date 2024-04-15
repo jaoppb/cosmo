@@ -105,7 +105,7 @@ export default class ViewManagementBase extends ViewBase {
                 class: "save",
                 icon: "fa-check",
                 confirm: true,
-                handler: () => this.createItem()
+                handler: () => this.saveItem()
             }
         ];
         const edit = new Menu("Editar", editButtonsData, this, menus);
@@ -140,7 +140,7 @@ export default class ViewManagementBase extends ViewBase {
             if(!this.menus.edit.check()) {
                 if(document.activeElement === this.elements.search.input.element) this.queryFromInput();
                 else this.editItem();
-            }
+            } else this.menus.edit.elements.bottomButtons[1].element.click();
         });
 
         this.createKeyboardAction(/^Escape$/, (event: KeyboardEvent) => {
@@ -200,12 +200,15 @@ export default class ViewManagementBase extends ViewBase {
         }
     }
 
-    reset() {
-        this.clearItems();
-        this.offset = 0;
-        if (this.elements.search.input.element.value.length > 0) this.queryFromInput();
-        else this.loadItems();
+    reset(search: boolean = true) {
+        if(search) {
+            this.clearItems();
+            this.offset = 0;
+            if (this.elements.search.input.element.value.length > 0) this.queryFromInput();
+            else this.loadItems();
+        }
         this.menus.edit.close();
+        this.trackingItem = null;
     }
 
     clearItems() {

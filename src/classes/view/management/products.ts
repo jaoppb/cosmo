@@ -118,7 +118,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
 
             updateItem(this.trackingItem, updatedItem).then(ok => {
                 if (ok) {
-                    this.reset();
+                    this.reset(false);
                 }
             });
         } catch (err) {
