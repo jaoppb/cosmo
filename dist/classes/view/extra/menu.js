@@ -36,6 +36,10 @@ class Menu {
                 this.close();
             });
         }
+        let confirmMenu = null;
+        if (bottomButtons.some(data => data.confirm)) {
+            confirmMenu = new Confirm(view, parent);
+        }
         const menuFields = menu.createChild("fields", "div");
         const menuBottom = menu.createChild("bottom", "div");
         const menuBottomButtons = [];
@@ -43,7 +47,12 @@ class Menu {
             const button = menuBottom.createChild(buttonData.class, "button");
             button.createChild("icon", "i", ["fa-solid", buttonData.icon]);
             button.createChild("text", "span").element.innerText = buttonData.text;
-            button.element.addEventListener("click", buttonData.handler);
+            button.element.addEventListener("click", buttonData.confirm ? () => {
+                confirmMenu.open((result) => {
+                    if (result)
+                        buttonData.handler();
+                });
+            } : buttonData.handler);
             menuBottomButtons.push(button);
         });
         this.elements = {
@@ -66,7 +75,7 @@ class Menu {
             this.elements.menus.element.classList.add("hide");
         }
     }
-    open() {
+    open(...any) {
         if (this.check())
             return;
         this.elements.main.element.classList.remove("hide");
@@ -84,3 +93,33 @@ class Menu {
     }
 }
 exports.default = Menu;
+class Confirm extends Menu {
+    callback = null;
+    constructor(view, parent) {
+        const confirmButtons = [
+            {
+                text: "Não",
+                class: "cancel",
+                icon: "fa-xmark",
+                handler: () => this.doCallback(false),
+            },
+            {
+                text: "Sim",
+                class: "confirm",
+                icon: "fa-chevron",
+                handler: () => this.doCallback(true),
+            }
+        ];
+        super("Você tem certeza?", confirmButtons, view, parent, ["confirm"], false);
+    }
+    doCallback(response) {
+        this.callback(response);
+        this.callback = null;
+        this.close();
+    }
+    open(callback) {
+        super.open();
+        this.callback = callback;
+        this.elements.bottomButtons[1].element.focus();
+    }
+}

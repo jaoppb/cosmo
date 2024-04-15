@@ -56,6 +56,11 @@ export default class Menu {
             });
         }
 
+        let confirmMenu: Confirm | null = null;
+        if(bottomButtons.some(data => data.confirm)) {
+            confirmMenu = new Confirm(view, parent);
+        }
+
         const menuFields = menu.createChild("fields", "div");
 
         const menuBottom = menu.createChild("bottom", "div");
@@ -64,7 +69,11 @@ export default class Menu {
             const button = menuBottom.createChild(buttonData.class, "button");
             button.createChild("icon", "i", ["fa-solid", buttonData.icon]);
             button.createChild("text", "span").element.innerText = buttonData.text;
-            button.element.addEventListener("click", buttonData.handler);
+            button.element.addEventListener("click", buttonData.confirm ? () => {
+                confirmMenu.open((result: boolean) => {
+                    if(result) buttonData.handler();
+                });
+            } : buttonData.handler);
             menuBottomButtons.push(button);
         });
 
@@ -91,7 +100,7 @@ export default class Menu {
         }
     }
 
-    open() {
+    open(...any: any[]): any {
         if(this.check()) return;
 
         this.elements.main.element.classList.remove("hide");
@@ -109,5 +118,38 @@ export default class Menu {
 
     checkMenus(): boolean {
         return document.querySelector(".menus:has(.show)") !== null;
+    }
+}
+
+class Confirm extends Menu {
+    callback: (result: boolean) => void | null = null;
+    constructor(view: ViewBase, parent: ElementHolder) {
+        const confirmButtons: ButtonData[] = [
+            {
+                text: "Não",
+                class: "cancel",
+                icon: "fa-xmark",
+                handler: () => this.doCallback(false),
+            },
+            {
+                text: "Sim",
+                class: "confirm",
+                icon: "fa-chevron",
+                handler: () => this.doCallback(true),
+            }
+        ];
+        super("Você tem certeza?", confirmButtons, view, parent, ["confirm"], false);
+    }
+
+    doCallback(response: boolean) {
+        this.callback(response);
+        this.callback = null;
+        this.close();
+    }
+
+    open(callback: (result: boolean) => void) {
+        super.open();
+        this.callback = callback;
+        this.elements.bottomButtons[1].element.focus();
     }
 }
