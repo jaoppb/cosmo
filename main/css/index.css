@@ -111,29 +111,49 @@ main {
 }
 
 button {
+    transition: background-color 250ms ease-in, transform 200ms ease-in;
+
     &.cancel, &.delete {
         color: white;
         background-color: #E01919;
 
         &:hover:not(:active) {
             cursor: pointer;
+            background-color: #E93535;
         }
 
         &:active {
             transform: scale(.97);
+            background-color: #CA1616;
         }
     }
 
     &.confirm, &.save, &.create {
         color: white;
-        background-color: #069E2D;
+        background-color: #058A26;
 
         &:hover:not(:active) {
             cursor: pointer;
+            background-color: #069D2C;
         }
 
         &:active {
             transform: scale(.97);
+            background-color: #06B131;
+        }
+    }
+
+    &.edit {
+        background-color: #00A5CF;
+
+        &:hover:not(:active) {
+            cursor: pointer;
+            background-color: #00C4F5;
+        }
+
+        &:active {
+            transform: scale(.97);
+            background-color: #0093B8;
         }
     }
 }
