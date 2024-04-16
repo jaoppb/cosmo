@@ -62,10 +62,15 @@ export default class ViewManagementBase extends ViewBase {
             this.queryFromInput();
         });
 
+        const editButton = searchBar.createChild("edit", "button");
+        editButton.createChild("icon", "i", ["fa-solid", "fa-pencil"]);
+        const editButtonText = editButton.createChild("text", "span");
+        editButtonText.element.innerText = "Editar";
+
         const createButton = searchBar.createChild("create", "button");
         createButton.createChild("icon", "i", ["fa-solid", "fa-plus"]);
         const createButtonText = createButton.createChild("text", "span");
-        createButtonText.element.innerText = `Novo ${title(name)}`;
+        createButtonText.element.innerText = "Novo";
 
         createButton.element.addEventListener("click", () => {
             this.menus.create.open();
@@ -74,7 +79,7 @@ export default class ViewManagementBase extends ViewBase {
         const deleteButton = searchBar.createChild("delete", "button");
         deleteButton.createChild("icon", "i", ["fa-solid", "fa-trash-can"]);
         const deleteButtonText = deleteButton.createChild("text", "span");
-        deleteButtonText.element.innerText = `Apagar ${title(name)}`;
+        deleteButtonText.element.innerText = "Apagar";
 
         const itemsWrapper = search.createChild("items", "div");
         const itemsHeader = itemsWrapper.createChild("header", "div");

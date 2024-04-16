@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("../base");
-const convert_1 = require("../../../shared/convert");
 const menu_1 = require("../extra/menu");
 class ViewManagementBase extends base_1.default {
     queryFromInput() { }
@@ -36,17 +35,21 @@ class ViewManagementBase extends base_1.default {
         searchButton.element.addEventListener("click", () => {
             this.queryFromInput();
         });
+        const editButton = searchBar.createChild("edit", "button");
+        editButton.createChild("icon", "i", ["fa-solid", "fa-pencil"]);
+        const editButtonText = editButton.createChild("text", "span");
+        editButtonText.element.innerText = "Editar";
         const createButton = searchBar.createChild("create", "button");
         createButton.createChild("icon", "i", ["fa-solid", "fa-plus"]);
         const createButtonText = createButton.createChild("text", "span");
-        createButtonText.element.innerText = `Novo ${(0, convert_1.title)(name)}`;
+        createButtonText.element.innerText = "Novo";
         createButton.element.addEventListener("click", () => {
             this.menus.create.open();
         });
         const deleteButton = searchBar.createChild("delete", "button");
         deleteButton.createChild("icon", "i", ["fa-solid", "fa-trash-can"]);
         const deleteButtonText = deleteButton.createChild("text", "span");
-        deleteButtonText.element.innerText = `Apagar ${(0, convert_1.title)(name)}`;
+        deleteButtonText.element.innerText = "Apagar";
         const itemsWrapper = search.createChild("items", "div");
         const itemsHeader = itemsWrapper.createChild("header", "div");
         const itemsHeaderSelectWrapper = itemsHeader.createChild("select", "div");
