@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ButtonData = void 0;
+exports.Confirm = exports.ButtonData = void 0;
 const base_1 = require("../base");
 class ButtonData {
     text;
@@ -122,3 +122,4 @@ class Confirm extends Menu {
         this.elements.bottomButtons[1].element.focus();
     }
 }
+exports.Confirm = Confirm;

@@ -120,7 +120,7 @@ export default class Menu {
     }
 }
 
-class Confirm extends Menu {
+export class Confirm extends Menu {
     callback: (result: boolean) => void | null = null;
     constructor(view: ViewBase, parent: ElementHolder) {
         const confirmButtons: ButtonData[] = [
