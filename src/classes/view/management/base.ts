@@ -110,9 +110,7 @@ export default class ViewManagementBase extends ViewBase {
             itemsList.children.forEach((item) => {
                 const element = item.children[0].children[0].element as HTMLElementType<"input">;
                 element.checked = !element.checked;
-                if (document.querySelector(".list .item.current") == null &&
-                    element.checked)
-                    this.elements.search.items.header.buttons.forEach(button => button.element.disabled = false)
+                this.checkButtons();
             });
         });
 
@@ -244,21 +242,21 @@ export default class ViewManagementBase extends ViewBase {
         this.elements.search.items.list.deleteChildren();
     }
 
-    selectItem(item: ElementHolder, checkbox: ElementHolder, itemData: CollectionTypes, event: MouseEvent) {
-        if(document.querySelector(".list .item.current, .list .item:has(input:checked)") == null) {
-            this.elements.search.items.header.buttons.forEach(button => {
-                button.element.disabled = true;
-            });
-        }
+    checkButtons() {
+        const state = document.querySelector(".list .item.current, .list .item:has(input:checked)") === null;
         this.elements.search.items.header.buttons.forEach(button => {
-            button.element.disabled = false;
+            button.element.disabled = state;
         });
-        if(event.target == checkbox.element) return;
+    }
+
+    selectItem(item: ElementHolder, checkbox: ElementHolder, itemData: CollectionTypes, event: MouseEvent) {
+        if(event.target == checkbox.element) return this.checkButtons();
         const current = document.querySelector(".item.current");
         if(current === undefined || current === item.element) return;
         if(current) current.classList.remove("current");
         item.element.classList.add("current");
         this.trackingItem = itemData;
+        this.checkButtons();
     }
 
     load(parent: HTMLElement) {

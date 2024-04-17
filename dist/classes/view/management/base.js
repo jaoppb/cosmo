@@ -78,9 +78,7 @@ class ViewManagementBase extends base_1.default {
             itemsList.children.forEach((item) => {
                 const element = item.children[0].children[0].element;
                 element.checked = !element.checked;
-                if (document.querySelector(".list .item.current") == null &&
-                    element.checked)
-                    this.elements.search.items.header.buttons.forEach(button => button.element.disabled = false);
+                this.checkButtons();
             });
         });
         const itemsList = itemsWrapper.createChild("list", "div");
@@ -205,17 +203,15 @@ class ViewManagementBase extends base_1.default {
     clearItems() {
         this.elements.search.items.list.deleteChildren();
     }
-    selectItem(item, checkbox, itemData, event) {
-        if (document.querySelector(".list .item.current, .list .item:has(input:checked)") == null) {
-            this.elements.search.items.header.buttons.forEach(button => {
-                button.element.disabled = true;
-            });
-        }
+    checkButtons() {
+        const state = document.querySelector(".list .item.current, .list .item:has(input:checked)") === null;
         this.elements.search.items.header.buttons.forEach(button => {
-            button.element.disabled = false;
+            button.element.disabled = state;
         });
+    }
+    selectItem(item, checkbox, itemData, event) {
         if (event.target == checkbox.element)
-            return;
+            return this.checkButtons();
         const current = document.querySelector(".item.current");
         if (current === undefined || current === item.element)
             return;
@@ -223,6 +219,7 @@ class ViewManagementBase extends base_1.default {
             current.classList.remove("current");
         item.element.classList.add("current");
         this.trackingItem = itemData;
+        this.checkButtons();
     }
     load(parent) {
         super.load(parent);
