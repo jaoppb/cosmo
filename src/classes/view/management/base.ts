@@ -1,9 +1,7 @@
 import ViewBase from "../base";
 import ElementHolder, {HTMLElementType} from "../../element/holder";
 import {CollectionTypes} from "../../../database";
-import {title} from "../../../shared/convert";
-import Menu, {ButtonData} from "../extra/menu";
-import {FindCursor} from "mongodb";
+import Menu, {Confirm, ButtonData} from "../extra/menu";
 
 export interface IManagementUsedElements {
     editMenu: {
@@ -18,6 +16,7 @@ export interface IManagementUsedElements {
         items: {
             header: {
                 main: ElementHolder,
+                buttons: ElementHolder<HTMLElementType<"button">>[],
                 checkbox: ElementHolder<HTMLElementType<"input">>,
             },
             list: ElementHolder
@@ -34,7 +33,7 @@ export default class ViewManagementBase extends ViewBase {
     queryFromInput(): void {};
     saveItem(): void {};
     createItem(): void {};
-    deleteItem(): void {};
+    deleteItem(itemQuery?: CollectionTypes): void {};
     loadItems(): void {};
     editItem(): void {};
     offset: number = 0;
@@ -67,6 +66,10 @@ export default class ViewManagementBase extends ViewBase {
         const editButtonText = editButton.createChild("text", "span");
         editButtonText.element.innerText = "Editar";
 
+        editButton.element.addEventListener("click", () => {
+            this.editItem();
+        });
+
         const createButton = searchBar.createChild("create", "button");
         createButton.createChild("icon", "i", ["fa-solid", "fa-plus"]);
         const createButtonText = createButton.createChild("text", "span");
@@ -81,6 +84,21 @@ export default class ViewManagementBase extends ViewBase {
         const deleteButtonText = deleteButton.createChild("text", "span");
         deleteButtonText.element.innerText = "Apagar";
 
+        const confirmDelete = new Confirm(this, menus);
+        deleteButton.element.addEventListener("click", () => {
+            confirmDelete.open((result) => {
+                if(!result) return;
+                if(itemsHeaderSelect.element.checked) {
+                    this.deleteItem(this.itemQuery);
+                } else this.deleteItem();
+            });
+        });
+
+        const headerButtons = [editButton, deleteButton];
+        headerButtons.forEach(button => {
+            button.element.disabled = true;
+        });
+
         const itemsWrapper = search.createChild("items", "div");
         const itemsHeader = itemsWrapper.createChild("header", "div");
 
@@ -92,6 +110,9 @@ export default class ViewManagementBase extends ViewBase {
             itemsList.children.forEach((item) => {
                 const element = item.children[0].children[0].element as HTMLElementType<"input">;
                 element.checked = !element.checked;
+                if (document.querySelector(".list .item.current") == null &&
+                    element.checked)
+                    this.elements.search.items.header.buttons.forEach(button => button.element.disabled = false)
             });
         });
 
@@ -193,6 +214,7 @@ export default class ViewManagementBase extends ViewBase {
                 items: {
                     header: {
                         main: itemsHeader,
+                        buttons: headerButtons,
                         checkbox: itemsHeaderSelect,
                     },
                     list: itemsList
@@ -205,15 +227,17 @@ export default class ViewManagementBase extends ViewBase {
         }
     }
 
-    reset(search: boolean = true) {
-        if(search) {
-            this.clearItems();
-            this.offset = 0;
-            if (this.elements.search.input.element.value.length > 0) this.queryFromInput();
-            else this.loadItems();
-        }
-        this.menus.edit.close();
+    reset() {
+        this.clearItems();
+        this.offset = 0;
+        if (this.elements.search.input.element.value.length > 0) this.queryFromInput();
+        else this.loadItems();
         this.trackingItem = null;
+        this.elements.search.items.header.buttons.forEach(button => {
+            button.element.disabled = true;
+        });
+        this.elements.search.items.header.checkbox.element.checked = false;
+        Object.values(this.menus).forEach(menu => menu.close());
     }
 
     clearItems() {
@@ -221,6 +245,14 @@ export default class ViewManagementBase extends ViewBase {
     }
 
     selectItem(item: ElementHolder, checkbox: ElementHolder, itemData: CollectionTypes, event: MouseEvent) {
+        if(document.querySelector(".list .item.current, .list .item:has(input:checked)") == null) {
+            this.elements.search.items.header.buttons.forEach(button => {
+                button.element.disabled = true;
+            });
+        }
+        this.elements.search.items.header.buttons.forEach(button => {
+            button.element.disabled = false;
+        });
         if(event.target == checkbox.element) return;
         const current = document.querySelector(".item.current");
         if(current === undefined || current === item.element) return;

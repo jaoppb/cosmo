@@ -9,7 +9,7 @@ class ViewManagementBase extends base_1.default {
     ;
     createItem() { }
     ;
-    deleteItem() { }
+    deleteItem(itemQuery) { }
     ;
     loadItems() { }
     ;
@@ -39,6 +39,9 @@ class ViewManagementBase extends base_1.default {
         editButton.createChild("icon", "i", ["fa-solid", "fa-pencil"]);
         const editButtonText = editButton.createChild("text", "span");
         editButtonText.element.innerText = "Editar";
+        editButton.element.addEventListener("click", () => {
+            this.editItem();
+        });
         const createButton = searchBar.createChild("create", "button");
         createButton.createChild("icon", "i", ["fa-solid", "fa-plus"]);
         const createButtonText = createButton.createChild("text", "span");
@@ -50,6 +53,22 @@ class ViewManagementBase extends base_1.default {
         deleteButton.createChild("icon", "i", ["fa-solid", "fa-trash-can"]);
         const deleteButtonText = deleteButton.createChild("text", "span");
         deleteButtonText.element.innerText = "Apagar";
+        const confirmDelete = new menu_1.Confirm(this, menus);
+        deleteButton.element.addEventListener("click", () => {
+            confirmDelete.open((result) => {
+                if (!result)
+                    return;
+                if (itemsHeaderSelect.element.checked) {
+                    this.deleteItem(this.itemQuery);
+                }
+                else
+                    this.deleteItem();
+            });
+        });
+        const headerButtons = [editButton, deleteButton];
+        headerButtons.forEach(button => {
+            button.element.disabled = true;
+        });
         const itemsWrapper = search.createChild("items", "div");
         const itemsHeader = itemsWrapper.createChild("header", "div");
         const itemsHeaderSelectWrapper = itemsHeader.createChild("select", "div");
@@ -59,6 +78,9 @@ class ViewManagementBase extends base_1.default {
             itemsList.children.forEach((item) => {
                 const element = item.children[0].children[0].element;
                 element.checked = !element.checked;
+                if (document.querySelector(".list .item.current") == null &&
+                    element.checked)
+                    this.elements.search.items.header.buttons.forEach(button => button.element.disabled = false);
             });
         });
         const itemsList = itemsWrapper.createChild("list", "div");
@@ -154,6 +176,7 @@ class ViewManagementBase extends base_1.default {
                 items: {
                     header: {
                         main: itemsHeader,
+                        buttons: headerButtons,
                         checkbox: itemsHeaderSelect,
                     },
                     list: itemsList
@@ -165,22 +188,32 @@ class ViewManagementBase extends base_1.default {
             create: create,
         };
     }
-    reset(search = true) {
-        if (search) {
-            this.clearItems();
-            this.offset = 0;
-            if (this.elements.search.input.element.value.length > 0)
-                this.queryFromInput();
-            else
-                this.loadItems();
-        }
-        this.menus.edit.close();
+    reset() {
+        this.clearItems();
+        this.offset = 0;
+        if (this.elements.search.input.element.value.length > 0)
+            this.queryFromInput();
+        else
+            this.loadItems();
         this.trackingItem = null;
+        this.elements.search.items.header.buttons.forEach(button => {
+            button.element.disabled = true;
+        });
+        this.elements.search.items.header.checkbox.element.checked = false;
+        Object.values(this.menus).forEach(menu => menu.close());
     }
     clearItems() {
         this.elements.search.items.list.deleteChildren();
     }
     selectItem(item, checkbox, itemData, event) {
+        if (document.querySelector(".list .item.current, .list .item:has(input:checked)") == null) {
+            this.elements.search.items.header.buttons.forEach(button => {
+                button.element.disabled = true;
+            });
+        }
+        this.elements.search.items.header.buttons.forEach(button => {
+            button.element.disabled = false;
+        });
         if (event.target == checkbox.element)
             return;
         const current = document.querySelector(".item.current");

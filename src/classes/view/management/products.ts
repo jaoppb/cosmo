@@ -2,7 +2,7 @@ import ViewBase from "../base";
 import {itemsUtils} from "../../../database";
 import Item, {IItem, NCM} from "../../../database/models/item";
 import {cashToInt, parseNCM, parseToCash} from "../../../shared/convert";
-import {getItems, updateItem, deleteItem} from "../../../database/services/item";
+import {getItems, updateItem, deleteItem, getItem, deleteItems} from "../../../database/services/item";
 import ElementHolder, {HTMLElementType} from "../../element/holder";
 import ViewManagementBase, {IManagementUsedElements} from "./base";
 
@@ -97,11 +97,9 @@ export default class ViewManagementProducts extends ViewManagementBase {
         }
     }
 
-    deleteItem() {
-        deleteItem(this.trackingItem).then(ok => {
-            if(ok) {
-                this.reset();
-            }
+    deleteItem(itemQuery?: IItem) {
+        (itemQuery ? deleteItems : deleteItem)(itemQuery ?? this.trackingItem).then(ok => {
+            if(ok) this.reset();
         });
     }
 
@@ -118,7 +116,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
 
             updateItem(this.trackingItem, updatedItem).then(ok => {
                 if (ok) {
-                    this.reset(false);
+                    this.menus.edit.close();
                 }
             });
         } catch (err) {
@@ -189,6 +187,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
     }
 
     editItem() {
+        if(this.trackingItem == null) return;
         this.elements.inputs.name.element.value = this.trackingItem.name;
         this.elements.inputs.barcode.element.value = this.trackingItem.barcode;
         this.elements.inputs.cost.element.value = parseToCash(this.trackingItem.price.cost);

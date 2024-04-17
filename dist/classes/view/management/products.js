@@ -72,11 +72,10 @@ class ViewManagementProducts extends base_1.default {
             ncm: editNCMInput
         };
     }
-    deleteItem() {
-        (0, item_2.deleteItem)(this.trackingItem).then(ok => {
-            if (ok) {
+    deleteItem(itemQuery) {
+        (itemQuery ? item_2.deleteItems : item_2.deleteItem)(itemQuery ?? this.trackingItem).then(ok => {
+            if (ok)
                 this.reset();
-            }
         });
     }
     saveItem() {
@@ -91,7 +90,7 @@ class ViewManagementProducts extends base_1.default {
             };
             (0, item_2.updateItem)(this.trackingItem, updatedItem).then(ok => {
                 if (ok) {
-                    this.reset(false);
+                    this.menus.edit.close();
                 }
             });
         }
@@ -152,6 +151,8 @@ class ViewManagementProducts extends base_1.default {
         this.loadItems();
     }
     editItem() {
+        if (this.trackingItem == null)
+            return;
         this.elements.inputs.name.element.value = this.trackingItem.name;
         this.elements.inputs.barcode.element.value = this.trackingItem.barcode;
         this.elements.inputs.cost.element.value = (0, convert_1.parseToCash)(this.trackingItem.price.cost);
