@@ -40,12 +40,12 @@ export default async function connectToDatabase() {
     const db: mongodb.Db = client.db(process.env.DB_NAME);
 
     collections.items = db.collection<IItem>(process.env.ITEMS_COLLECTION_NAME);
-    await collections.items.createIndex({barcode: 1});
+    await collections.items.createIndex({barcode: 1}, {unique: true});
 
     collections.sales = db.collection<ISale>(process.env.SALES_COLLECTION_NAME);
 
     collections.users = db.collection<IUser>(process.env.USERS_COLLECTION_NAME);
-    await collections.users.createIndex({name: 1});
+    await collections.users.createIndex({name: 1}, {unique: true});
 
     await createPlaceHolderItem();
 

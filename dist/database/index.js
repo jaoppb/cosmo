@@ -28,10 +28,10 @@ async function connectToDatabase() {
     console.log("Connected to database");
     const db = client.db(process.env.DB_NAME);
     exports.collections.items = db.collection(process.env.ITEMS_COLLECTION_NAME);
-    await exports.collections.items.createIndex({ barcode: 1 });
+    await exports.collections.items.createIndex({ barcode: 1 }, { unique: true });
     exports.collections.sales = db.collection(process.env.SALES_COLLECTION_NAME);
     exports.collections.users = db.collection(process.env.USERS_COLLECTION_NAME);
-    await exports.collections.users.createIndex({ name: 1 });
+    await exports.collections.users.createIndex({ name: 1 }, { unique: true });
     await createPlaceHolderItem();
     return true;
 }
