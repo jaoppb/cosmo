@@ -8,6 +8,6 @@ async function createUser(user) {
 }
 exports.createUser = createUser;
 async function getLastLoggedUser() {
-    return (await index_1.collections.users.findOne({ lastLoggedUser: true }));
+    return (await index_1.collections.users.findOne({ lastLogged: true }));
 }
 exports.getLastLoggedUser = getLastLoggedUser;

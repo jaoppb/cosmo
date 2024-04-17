@@ -8,5 +8,5 @@ export async function createUser(user: IUser) {
 }
 
 export async function getLastLoggedUser() {
-    return (await collections.users.findOne({lastLoggedUser: true})) as User;
+    return (await collections.users.findOne({lastLogged: true})) as User;
 }
