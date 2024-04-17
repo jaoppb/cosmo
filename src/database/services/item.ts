@@ -54,3 +54,19 @@ export async function deleteItem(query: IItem) {
     await collections.items.deleteOne(query);
     return true;
 }
+
+export async function deleteItems(query: IItem, except?: IItem | IItem[]) {
+    if(except) {
+        if(Array.isArray(except)) except = [except];
+        query = {
+            $and: [
+                query,
+                {
+                    $nor: except
+                }
+            ]
+        }
+    }
+    await collections.items.deleteMany(query);
+    return true;
+}

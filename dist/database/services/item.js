@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.updateItem = exports.createItem = exports.getItems = exports.getItem = exports.handleItemQuery = void 0;
+exports.deleteItems = exports.deleteItem = exports.updateItem = exports.createItem = exports.getItems = exports.getItem = exports.handleItemQuery = void 0;
 const index_1 = require("../index");
 function handleItemQuery(query) {
     let itemQuery = {};
@@ -66,3 +66,20 @@ async function deleteItem(query) {
     return true;
 }
 exports.deleteItem = deleteItem;
+async function deleteItems(query, except) {
+    if (except) {
+        if (Array.isArray(except))
+            except = [except];
+        query = {
+            $and: [
+                query,
+                {
+                    $nor: except
+                }
+            ]
+        };
+    }
+    await index_1.collections.items.deleteMany(query);
+    return true;
+}
+exports.deleteItems = deleteItems;
