@@ -9,15 +9,20 @@ import User from "./database/models/user";
 const keyboardHandler = new KeyboardHandler();
 window.addEventListener("keydown", event => keyboardHandler.trigger(event));
 window.addEventListener("keyup", event => keyboardHandler.trigger(event));
-(async () => {
-    await connectToDatabase();
-    global.user = await getLastLoggedUser();
-    if(global.user === null) {
-        await createUser(new User("default"));
-    }
-})();
 
-window.onload = () => {
+const preload = async (callback: () => void) => {
+    try {
+        await connectToDatabase();
+    } catch (err) {
+        console.log(err);
+    } finally {
+        global.user = await getLastLoggedUser();
+        if(global.user === null) await createUser(new User("default"));
+        callback();
+    }
+}
+
+const load = () => {
     const elements: ViewManagerElements = {
         parent: document.querySelector("main"),
         tab: {
@@ -30,3 +35,5 @@ window.onload = () => {
     viewManager.setView(views[0]);
     keyboardHandler.subscribe(viewManager);
 }
+
+preload(() => window.onload = load).then(() => console.log("App loaded successfully"));

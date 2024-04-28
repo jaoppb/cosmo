@@ -9,14 +9,21 @@ const user_2 = require("./database/models/user");
 const keyboardHandler = new keyboard_1.default();
 window.addEventListener("keydown", event => keyboardHandler.trigger(event));
 window.addEventListener("keyup", event => keyboardHandler.trigger(event));
-(async () => {
-    await (0, database_1.default)();
-    global.user = await (0, user_1.getLastLoggedUser)();
-    if (global.user === null) {
-        await (0, user_1.createUser)(new user_2.default("default"));
+const preload = async (callback) => {
+    try {
+        await (0, database_1.default)();
     }
-})();
-window.onload = () => {
+    catch (err) {
+        console.log(err);
+    }
+    finally {
+        global.user = await (0, user_1.getLastLoggedUser)();
+        if (global.user === null)
+            await (0, user_1.createUser)(new user_2.default("default"));
+        callback();
+    }
+};
+const load = () => {
     const elements = {
         parent: document.querySelector("main"),
         tab: {
@@ -29,3 +36,4 @@ window.onload = () => {
     viewManager.setView(views[0]);
     keyboardHandler.subscribe(viewManager);
 };
+preload(() => window.onload = load).then(() => console.log("App loaded successfully"));
