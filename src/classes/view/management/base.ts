@@ -155,35 +155,6 @@ export default class ViewManagementBase extends ViewBase {
         const edit = new Menu("Editar", editButtonsData, this, menus);
         const editFields = edit.elements.fields;
 
-        this.fields = fields;
-        Object.entries(fields).forEach(entry => {
-            const [name, field] = entry;
-            itemsHeader.createChild(field.label.toLowerCase(), "span").element.innerText = field.label;
-            const editElement= editFields.createChild(name, "div", ["field"]);
-            field.elements = {
-                edit: {
-                    main: editElement,
-                },
-                create: {},
-            }
-
-            const label = editElement.createChild("label", "span");
-            label.element.innerText = `${field.label}: `;
-            if (field.input?.currency) {
-                const input = editElement.createChild("input", "div");
-                const inputCurrency = input.createChild("currency", "span");
-                inputCurrency.element.innerText = global.user.settings.currency;
-                const inputNumber = input.createChild("number", "input");
-                if(field.input?.maxLength) inputNumber.element.maxLength = field.input.maxLength;
-                field.elements.edit.input = inputNumber;
-            } else {
-                const input = editElement.createChild("input", "input");
-                input.element.type = field.input?.type ?? "text";
-                if(field.input?.maxLength) input.element.maxLength = field.input.maxLength;
-                field.elements.edit.input = input;
-            }
-        });
-
         const createButtonsData: ButtonData[] = [
             {
                 text: "Cancelar",
@@ -200,6 +171,41 @@ export default class ViewManagementBase extends ViewBase {
         ];
         const create = new Menu("Criar", createButtonsData, this, menus);
         const createFields = create.elements.fields;
+
+        this.fields = fields;
+        Object.entries(fields).forEach(entry => {
+            const [name, field] = entry;
+            itemsHeader.createChild(field.label.toLowerCase(), "span").element.innerText = field.label;
+            const editElement= editFields.createChild(name, "div", ["field"]);
+            const createElement = createFields.createChild(name, "div", ["field"]);
+            field.elements = {
+                edit: {
+                    main: editElement,
+                },
+                create: {
+                    main: createElement,
+                },
+            }
+
+            for(const elements of Object.entries(field.elements)) {
+                const {main} = elements[1];
+                const label = main.createChild("label", "span");
+                label.element.innerText = `${field.label}: `;
+                if (field.input?.currency) {
+                    const input = main.createChild("input", "div");
+                    const inputCurrency = input.createChild("currency", "span");
+                    inputCurrency.element.innerText = global.user.settings.currency;
+                    const inputNumber = input.createChild("number", "input");
+                    if(field.input?.maxLength) inputNumber.element.maxLength = field.input.maxLength;
+                    elements[1].input = inputNumber;
+                } else {
+                    const input = main.createChild("input", "input");
+                    input.element.type = field.input?.type ?? "text";
+                    if(field.input?.maxLength) input.element.maxLength = field.input.maxLength;
+                    elements[1].input = input;
+                }
+            }
+        });
 
         itemsList.element.addEventListener("scroll", event => {
             if(itemsList.element.scrollTop / itemsList.children[0]?.element.offsetHeight > itemsList.children.length - 10) {
