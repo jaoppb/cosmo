@@ -1,17 +1,34 @@
-import ViewManagementBase from "./base";
+import ViewManagementBase, {IFieldData} from "./base";
 import {ISale, SaleQuery} from "../../../database/models/sale";
 import {getSales} from "../../../database/services/sale";
 import {cashToInt, parseToCash} from "../../../shared/convert";
+
+enum FieldKeys {
+    Date = "date",
+    Quantitiy = "quantity",
+    Value = "value",
+}
+
+const fields: Record<FieldKeys, IFieldData> = {
+    date: {
+        label: "Data"
+    },
+    quantity: {
+        label: "Quantidade",
+    },
+    value: {
+        label: "Valor",
+        input: {
+            currency: true
+        }
+    }
+};
 
 export default class ViewManagementSales extends ViewManagementBase {
     itemQuery: SaleQuery = {$or: [{}]};
     trackingItem: ISale = {};
     constructor() {
-        super("sales", "./css/management/sales.css");
-
-        for(const text of ["Data", "Quantidade", "Valor"]) {
-            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
-        }
+        super("sales", fields, "./css/management/sales.css");
 
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;
     }

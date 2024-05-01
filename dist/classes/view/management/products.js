@@ -5,71 +5,74 @@ const item_1 = require("../../../database/models/item");
 const convert_1 = require("../../../shared/convert");
 const item_2 = require("../../../database/services/item");
 const base_1 = require("./base");
+var FieldKeys;
+(function (FieldKeys) {
+    FieldKeys["Name"] = "name";
+    FieldKeys["Barcode"] = "barcode";
+    FieldKeys["Cost"] = "cost";
+    FieldKeys["Sale"] = "sale";
+    FieldKeys["Stock"] = "stock";
+    FieldKeys["NCM"] = "ncm";
+})(FieldKeys || (FieldKeys = {}));
+const fields = {
+    name: {
+        label: "Nome"
+    },
+    barcode: {
+        label: "Código"
+    },
+    cost: {
+        label: "Custo",
+        input: {
+            currency: true
+        }
+    },
+    sale: {
+        label: "Venda",
+        input: {
+            currency: true
+        }
+    },
+    stock: {
+        label: "Estoque",
+        input: {
+            type: "number"
+        }
+    },
+    ncm: {
+        label: "NCM"
+    }
+};
 class ViewManagementProducts extends base_1.default {
     itemQuery = {};
     trackingItem = {};
     constructor() {
-        super("products", "./css/management/products.css");
+        super("products", fields, "./css/management/products.css");
         const placeholderItem = database_1.itemsUtils["placeholder"];
-        for (const text of ["Name", "Barcode", "Cost", "Sale", "Stock", "NCM"]) {
-            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
-        }
-        const editName = this.elements.editMenu.fields.createChild("name", "div", ["field"]);
-        const editNameLabel = editName.createChild("label", "span");
-        editNameLabel.element.innerText = "Name: ";
-        const editNameInput = editName.createChild("input", "input");
-        const editBarcode = this.elements.editMenu.fields.createChild("barcode", "div", ["field"]);
-        const editBarcodeLabel = editBarcode.createChild("label", "span");
-        editBarcodeLabel.element.innerText = "Barcode: ";
-        const editBarcodeInput = editBarcode.createChild("input", "input");
-        const editCost = this.elements.editMenu.fields.createChild("cost", "div", ["field"]);
-        const editCostLabel = editCost.createChild("label", "span");
-        editCostLabel.element.innerText = "Cost: ";
-        const editCostInput = editCost.createChild("input", "div");
-        const editCostCurrency = editCostInput.createChild("currency", "span");
-        editCostCurrency.element.innerText = global.user.settings.currency;
-        const editCostNumber = editCostInput.createChild("number", "input");
-        const editSale = this.elements.editMenu.fields.createChild("sale", "div", ["field"]);
-        const editSaleLabel = editSale.createChild("label", "span");
-        editSaleLabel.element.innerText = "Sale: ";
-        const editSaleInput = editSale.createChild("input", "div");
-        const editSaleCurrency = editSaleInput.createChild("currency", "span");
-        editSaleCurrency.element.innerText = global.user.settings.currency;
-        const editSaleNumber = editSaleInput.createChild("number", "input");
-        const editStock = this.elements.editMenu.fields.createChild("stock", "div", ["field"]);
-        const editStockLabel = editStock.createChild("label", "span");
-        editStockLabel.element.innerText = "Stock: ";
-        const editStockInput = editStock.createChild("input", "input");
-        editStockInput.element.type = "number";
-        const editNCM = this.elements.editMenu.fields.createChild("ncm", "div", ["field"]);
-        const editNCMLabel = editNCM.createChild("label", "span");
-        editNCMLabel.element.innerText = "NCM: ";
-        const editNCMInput = editNCM.createChild("input", "input");
-        editNCMInput.element.maxLength = 10;
         this.createKeyboardAction(/^[^0-9,]$/, (event) => {
             const active = document.activeElement;
             if (event.ctrlKey || event.altKey)
                 return;
             if (active instanceof HTMLInputElement &&
-                [editCostNumber.element, editSaleNumber.element].includes(active)) {
+                [this.fields.cost.elements.edit.input.element, this.fields.sale.elements.edit.input.element].includes(active)) {
                 event.preventDefault();
             }
         });
         this.createKeyboardAction(/^,$/, (event) => {
             const active = document.activeElement;
             if (active instanceof HTMLInputElement &&
-                [editCostNumber.element, editSaleNumber.element].includes(active)) {
+                [this.fields.cost.elements.edit.input.element, this.fields.sale.elements.edit.input.element].includes(active)) {
                 if (!/^\d+$/.test(active.value))
                     event.preventDefault();
             }
         });
         this.elements.inputs = {
-            name: editNameInput,
-            barcode: editBarcodeInput,
-            cost: editCostNumber,
-            sale: editSaleNumber,
-            stock: editStockInput,
-            ncm: editNCMInput
+            name: this.fields.name.elements.edit.input,
+            barcode: this.fields.barcode.elements.edit.input,
+            cost: this.fields.cost.elements.edit.input,
+            sale: this.fields.sale.elements.edit.input,
+            stock: this.fields.stock.elements.edit.input,
+            ncm: this.fields.ncm.elements.edit.input
         };
     }
     deleteItem(itemQuery) {

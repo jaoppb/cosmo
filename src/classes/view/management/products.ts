@@ -4,7 +4,7 @@ import Item, {IItem, NCM} from "../../../database/models/item";
 import {cashToInt, parseNCM, parseToCash} from "../../../shared/convert";
 import {getItems, updateItem, deleteItem, getItem, deleteItems} from "../../../database/services/item";
 import ElementHolder, {HTMLElementType} from "../../element/holder";
-import ViewManagementBase, {IManagementUsedElements} from "./base";
+import ViewManagementBase, {IFieldData, IManagementUsedElements} from "./base";
 
 interface IUsedElements extends IManagementUsedElements {
     inputs: {
@@ -17,55 +17,52 @@ interface IUsedElements extends IManagementUsedElements {
     },
 }
 
+enum FieldKeys {
+    Name = "name",
+    Barcode = "barcode",
+    Cost = "cost",
+    Sale = "sale",
+    Stock = "stock",
+    NCM = "ncm"
+}
+
+const fields: Record<FieldKeys, IFieldData> = {
+    name: {
+        label: "Nome"
+    },
+    barcode: {
+        label: "Código"
+    },
+    cost: {
+        label: "Custo",
+        input: {
+            currency: true
+        }
+    },
+    sale: {
+        label: "Venda",
+        input: {
+            currency: true
+        }
+    },
+    stock: {
+        label: "Estoque",
+        input: {
+            type: "number"
+        }
+    },
+    ncm: {
+        label: "NCM"
+    }
+};
+
 export default class ViewManagementProducts extends ViewManagementBase {
     itemQuery: IItem = {};
     trackingItem: IItem = {};
     declare elements: IUsedElements;
     constructor() {
-        super("products", "./css/management/products.css");
+        super("products", fields, "./css/management/products.css");
         const placeholderItem = itemsUtils["placeholder"];
-
-        for(const text of ["Name", "Barcode", "Cost", "Sale", "Stock", "NCM"]) {
-            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
-        }
-
-        const editName = this.elements.editMenu.fields.createChild("name", "div", ["field"]);
-        const editNameLabel = editName.createChild("label", "span");
-        editNameLabel.element.innerText = "Name: ";
-        const editNameInput = editName.createChild("input", "input");
-
-        const editBarcode = this.elements.editMenu.fields.createChild("barcode", "div", ["field"]);
-        const editBarcodeLabel = editBarcode.createChild("label", "span");
-        editBarcodeLabel.element.innerText = "Barcode: ";
-        const editBarcodeInput = editBarcode.createChild("input", "input");
-
-        const editCost = this.elements.editMenu.fields.createChild("cost", "div", ["field"]);
-        const editCostLabel = editCost.createChild("label", "span");
-        editCostLabel.element.innerText = "Cost: ";
-        const editCostInput = editCost.createChild("input", "div");
-        const editCostCurrency = editCostInput.createChild("currency", "span");
-        editCostCurrency.element.innerText = global.user.settings.currency;
-        const editCostNumber = editCostInput.createChild("number", "input");
-
-        const editSale = this.elements.editMenu.fields.createChild("sale", "div", ["field"]);
-        const editSaleLabel = editSale.createChild("label", "span");
-        editSaleLabel.element.innerText = "Sale: ";
-        const editSaleInput = editSale.createChild("input", "div");
-        const editSaleCurrency = editSaleInput.createChild("currency", "span");
-        editSaleCurrency.element.innerText = global.user.settings.currency;
-        const editSaleNumber = editSaleInput.createChild("number", "input");
-
-        const editStock = this.elements.editMenu.fields.createChild("stock", "div", ["field"]);
-        const editStockLabel = editStock.createChild("label", "span");
-        editStockLabel.element.innerText = "Stock: ";
-        const editStockInput = editStock.createChild("input", "input");
-        editStockInput.element.type = "number";
-
-        const editNCM = this.elements.editMenu.fields.createChild("ncm", "div", ["field"]);
-        const editNCMLabel = editNCM.createChild("label", "span");
-        editNCMLabel.element.innerText = "NCM: ";
-        const editNCMInput = editNCM.createChild("input", "input");
-        editNCMInput.element.maxLength = 10;
 
         this.createKeyboardAction(/^[^0-9,]$/, (event: KeyboardEvent) => {
             const active = document.activeElement;
@@ -73,7 +70,7 @@ export default class ViewManagementProducts extends ViewManagementBase {
             if(event.ctrlKey || event.altKey) return;
 
             if (active instanceof HTMLInputElement &&
-                [editCostNumber.element, editSaleNumber.element].includes(active)) {
+                [this.fields.cost.elements.edit.input.element, this.fields.sale.elements.edit.input.element].includes(active)) {
                 event.preventDefault();
             }
         });
@@ -82,18 +79,18 @@ export default class ViewManagementProducts extends ViewManagementBase {
             const active = document.activeElement as HTMLElement;
 
             if (active instanceof HTMLInputElement &&
-                [editCostNumber.element, editSaleNumber.element].includes(active)) {
+                [this.fields.cost.elements.edit.input.element, this.fields.sale.elements.edit.input.element].includes(active)) {
                 if(!/^\d+$/.test(active.value)) event.preventDefault()
             }
         });
 
         this.elements.inputs = {
-            name: editNameInput,
-            barcode: editBarcodeInput,
-            cost: editCostNumber,
-            sale: editSaleNumber,
-            stock: editStockInput,
-            ncm: editNCMInput
+            name: this.fields.name.elements.edit.input,
+            barcode: this.fields.barcode.elements.edit.input,
+            cost: this.fields.cost.elements.edit.input,
+            sale: this.fields.sale.elements.edit.input,
+            stock: this.fields.stock.elements.edit.input,
+            ncm: this.fields.ncm.elements.edit.input
         }
     }
 

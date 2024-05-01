@@ -4,3 +4,7 @@
         grid-template-columns: 60px 3fr 4fr 2fr;
     }
 }
+
+.menu .field {
+    grid-template-columns: 200px auto !important;
+}

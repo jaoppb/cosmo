@@ -3,14 +3,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("./base");
 const sale_1 = require("../../../database/services/sale");
 const convert_1 = require("../../../shared/convert");
+var FieldKeys;
+(function (FieldKeys) {
+    FieldKeys["Date"] = "date";
+    FieldKeys["Quantitiy"] = "quantity";
+    FieldKeys["Value"] = "value";
+})(FieldKeys || (FieldKeys = {}));
+const fields = {
+    date: {
+        label: "Data"
+    },
+    quantity: {
+        label: "Quantidade",
+    },
+    value: {
+        label: "Valor",
+        input: {
+            currency: true
+        }
+    }
+};
 class ViewManagementSales extends base_1.default {
     itemQuery = { $or: [{}] };
     trackingItem = {};
     constructor() {
-        super("sales", "./css/management/sales.css");
-        for (const text of ["Data", "Quantidade", "Valor"]) {
-            this.elements.search.items.header.main.createChild(text.toLowerCase(), "span").element.innerText = text;
-        }
+        super("sales", fields, "./css/management/sales.css");
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;
     }
     loadItems() {

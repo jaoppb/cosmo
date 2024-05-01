@@ -21,7 +21,8 @@ class ViewManagementBase extends base_1.default {
     menus;
     itemQuery;
     trackingItem;
-    constructor(name, cssPathFile) {
+    fields;
+    constructor(name, fields, cssPathFile) {
         if (!Array.isArray(cssPathFile))
             cssPathFile = [cssPathFile];
         super(name, ["css/management/base.css", ...cssPathFile]);
@@ -100,6 +101,36 @@ class ViewManagementBase extends base_1.default {
         ];
         const edit = new menu_1.default("Editar", editButtonsData, this, menus);
         const editFields = edit.elements.fields;
+        this.fields = fields;
+        Object.entries(fields).forEach(entry => {
+            const [name, field] = entry;
+            itemsHeader.createChild(field.label.toLowerCase(), "span").element.innerText = field.label;
+            const editElement = editFields.createChild(name, "div", ["field"]);
+            field.elements = {
+                edit: {
+                    main: editElement,
+                },
+                create: {},
+            };
+            const label = editElement.createChild("label", "span");
+            label.element.innerText = `${field.label}: `;
+            if (field.input?.currency) {
+                const input = editElement.createChild("input", "div");
+                const inputCurrency = input.createChild("currency", "span");
+                inputCurrency.element.innerText = global.user.settings.currency;
+                const inputNumber = input.createChild("number", "input");
+                if (field.input?.maxLength)
+                    inputNumber.element.maxLength = field.input.maxLength;
+                field.elements.edit.input = inputNumber;
+            }
+            else {
+                const input = editElement.createChild("input", "input");
+                input.element.type = field.input?.type ?? "text";
+                if (field.input?.maxLength)
+                    input.element.maxLength = field.input.maxLength;
+                field.elements.edit.input = input;
+            }
+        });
         const createButtonsData = [
             {
                 text: "Cancelar",
