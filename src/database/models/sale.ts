@@ -6,17 +6,7 @@ export interface ISaleTotal {
     price?: number,
 }
 
-export enum SaleFields {
-    _id = "_id",
-    items = "items",
-    timestamp = "timestamp",
-    total = "total",
-}
-
-type SaleKeys = keyof typeof SaleFields;
-type SaleKeyFields = {[key in SaleKeys]?: any};
-
-export interface ISale extends SaleKeyFields {
+export interface ISale {
     _id?: ObjectId;
     items?: IItemData[];
     timestamp?: number;

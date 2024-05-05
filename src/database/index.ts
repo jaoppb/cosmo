@@ -32,7 +32,7 @@ const createPlaceHolderItem = async () => {
 }
 
 export type CollectionTypes = IItem | ISale;
-export type CollectionChangeTypes = IItemChanges | ISale;
+export type CollectionChangeTypes = IItemChanges | ISale
 
 export default async function connectToDatabase() {
     const client: mongodb.MongoClient = new mongodb.MongoClient(process.env.DB_CONN_STRING);

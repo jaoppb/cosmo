@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ItemData = exports.ItemFields = exports.NCM = void 0;
+exports.ItemData = exports.NCM = void 0;
 function NCM(value) {
     if (typeof value == "string") {
         if (value.length == 0)
@@ -18,15 +18,6 @@ function NCM(value) {
     return value;
 }
 exports.NCM = NCM;
-var ItemFields;
-(function (ItemFields) {
-    ItemFields["_id"] = "_id";
-    ItemFields["name"] = "name";
-    ItemFields["barcode"] = "barcode";
-    ItemFields["price"] = "price";
-    ItemFields["stock"] = "stock";
-    ItemFields["ncm"] = "ncm";
-})(ItemFields || (exports.ItemFields = ItemFields = {}));
 class Item {
     _id;
     name;
