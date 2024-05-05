@@ -1,6 +1,6 @@
 import ViewManagementBase, {IFieldData} from "./base";
 import {ISale, SaleQuery} from "../../../database/models/sale";
-import {getSales} from "../../../database/services/sale";
+import {createSale, deleteSale, deleteSales, getSale, getSales, updateSale} from "../../../database/services/sale";
 import {cashToInt, parseToCash} from "../../../shared/convert";
 
 enum FieldKeys {
@@ -31,6 +31,15 @@ export default class ViewManagementSales extends ViewManagementBase {
         super("sales", fields, "./css/management/sales.css");
 
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;
+
+        this.dbFunctions = {
+            getOne: getSale,
+            getAll: getSales,
+            create: createSale,
+            deleteOne: deleteSale,
+            deleteAll: deleteSales,
+            update: updateSale,
+        };
     }
 
     loadItems() {
@@ -92,6 +101,7 @@ export default class ViewManagementSales extends ViewManagementBase {
     }
 
     editItem() {
+        if(this.trackingItem === null) return;
         this.menus.edit.open();
     }
 }

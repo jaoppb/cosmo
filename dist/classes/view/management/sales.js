@@ -29,6 +29,14 @@ class ViewManagementSales extends base_1.default {
     constructor() {
         super("sales", fields, "./css/management/sales.css");
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;
+        this.dbFunctions = {
+            getOne: sale_1.getSale,
+            getAll: sale_1.getSales,
+            create: sale_1.createSale,
+            deleteOne: sale_1.deleteSale,
+            deleteAll: sale_1.deleteSales,
+            update: sale_1.updateSale,
+        };
     }
     loadItems() {
         (0, sale_1.getSales)(this.itemQuery, this.batchSize, this.offset).then(sales => {
@@ -83,6 +91,8 @@ class ViewManagementSales extends base_1.default {
         this.loadItems();
     }
     editItem() {
+        if (this.trackingItem === null)
+            return;
         this.menus.edit.open();
     }
 }
