@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserFields = void 0;
 const user_1 = require("../services/user");
+var UserFields;
+(function (UserFields) {
+    UserFields["_id"] = "_id";
+    UserFields["name"] = "name";
+    UserFields["settings"] = "settings";
+    UserFields["lastLogged"] = "lastLogged";
+})(UserFields || (exports.UserFields = UserFields = {}));
 class User {
     _id;
     name;

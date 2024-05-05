@@ -1,5 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SaleFields = void 0;
+var SaleFields;
+(function (SaleFields) {
+    SaleFields["_id"] = "_id";
+    SaleFields["items"] = "items";
+    SaleFields["timestamp"] = "timestamp";
+    SaleFields["total"] = "total";
+})(SaleFields || (exports.SaleFields = SaleFields = {}));
 class Sale {
     _id;
     items;

@@ -6,7 +6,17 @@ export interface ISettings {
     paymentTypes: string[],
 }
 
-export interface IUser {
+export enum UserFields {
+    _id = "_id",
+    name = "name",
+    settings = "settings",
+    lastLogged = "lastLogged",
+}
+
+type UserKeys = keyof typeof UserFields;
+type UserKeyFields = {[key in UserKeys]?: any};
+
+export interface IUser extends UserKeyFields {
     _id?: ObjectId,
     name?: string,
     settings?: ISettings,
