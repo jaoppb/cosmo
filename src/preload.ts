@@ -34,6 +34,7 @@ const load = () => {
     const viewManager = createViewManager(elements, views, true);
     viewManager.setView(views[0]);
     keyboardHandler.subscribe(viewManager);
+    console.log("App loaded successfully")
 }
 
-preload(() => window.onload = load).then(() => console.log("App loaded successfully"));
+preload(() => window.onload = load).then();
