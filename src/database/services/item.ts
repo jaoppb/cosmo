@@ -26,9 +26,13 @@ export async function getItems(query: IItem, limit?: number, offset?: number) {
 }
 
 export async function createItem(item: IItem) {
-    if(await getItem(item) !== null) return console.log("Already exists, update it!");
+    if(await getItem(item) !== null) {
+        console.log("Already exists, update it!");
+        return false;
+    }
 
     await collections.items.insertOne(item);
+    return true;
 }
 
 export async function updateItem(query: IItem, changes: IItemChanges) {

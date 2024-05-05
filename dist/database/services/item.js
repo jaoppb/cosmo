@@ -31,9 +31,12 @@ async function getItems(query, limit, offset) {
 }
 exports.getItems = getItems;
 async function createItem(item) {
-    if (await getItem(item) !== null)
-        return console.log("Already exists, update it!");
+    if (await getItem(item) !== null) {
+        console.log("Already exists, update it!");
+        return false;
+    }
     await index_1.collections.items.insertOne(item);
+    return true;
 }
 exports.createItem = createItem;
 async function updateItem(query, changes) {
