@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("../../../database");
-const item_1 = require("../../../database/models/item");
 const convert_1 = require("../../../shared/convert");
-const item_2 = require("../../../database/services/item");
+const item_1 = require("../../../database/services/item");
 const base_1 = require("./base");
 var FieldKeys;
 (function (FieldKeys) {
@@ -74,35 +73,22 @@ class ViewManagementProducts extends base_1.default {
             stock: this.fields.stock.elements.edit.input,
             ncm: this.fields.ncm.elements.edit.input
         };
+        this.dbFunctions = {
+            getOne: item_1.getItem,
+            getAll: item_1.getItems,
+            create: item_1.createItem,
+            deleteOne: item_1.deleteItem,
+            deleteAll: item_1.deleteItems,
+            update: item_1.updateItem,
+        };
     }
-    deleteItem(itemQuery) {
-        (itemQuery ? item_2.deleteItems : item_2.deleteItem)(itemQuery ?? this.trackingItem).then(ok => {
-            if (ok)
-                this.reset();
-        });
-    }
-    saveItem() {
-        try {
-            const updatedItem = {
-                name: this.elements.inputs.name.element.value,
-                barcode: this.elements.inputs.barcode.element.value,
-                "price.cost": (0, convert_1.cashToInt)(this.elements.inputs.cost.element.value.replace(/[^,.0-9]/g, "")),
-                "price.sale": (0, convert_1.cashToInt)(this.elements.inputs.sale.element.value.replace(/[^,.0-9]/g, "")),
-                stock: parseInt(this.elements.inputs.stock.element.value),
-                ncm: (0, item_1.NCM)(this.elements.inputs.ncm.element.value)
-            };
-            (0, item_2.updateItem)(this.trackingItem, updatedItem).then(ok => {
-                if (ok) {
-                    this.menus.edit.close();
-                }
-            });
-        }
-        catch (err) {
-            console.log(err);
-        }
+    translateField(key) {
+        if (key == "cost" || key == "sale")
+            return `price.${key}`;
+        return key;
     }
     loadItems() {
-        (0, item_2.getItems)(this.itemQuery, this.batchSize, this.offset).then(items => {
+        (0, item_1.getItems)(this.itemQuery, this.batchSize, this.offset).then(items => {
             items.forEach(item => this.renderItem(item));
         });
         this.offset += this.batchSize;

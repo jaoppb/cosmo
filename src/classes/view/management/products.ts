@@ -2,7 +2,7 @@ import ViewBase from "../base";
 import {itemsUtils} from "../../../database";
 import Item, {IItem, NCM} from "../../../database/models/item";
 import {cashToInt, parseNCM, parseToCash} from "../../../shared/convert";
-import {getItems, updateItem, deleteItem, getItem, deleteItems} from "../../../database/services/item";
+import {getItems, updateItem, deleteItem, getItem, deleteItems, createItem} from "../../../database/services/item";
 import ElementHolder, {HTMLElementType} from "../../element/holder";
 import ViewManagementBase, {IFieldData, IManagementUsedElements} from "./base";
 
@@ -92,33 +92,20 @@ export default class ViewManagementProducts extends ViewManagementBase {
             stock: this.fields.stock.elements.edit.input,
             ncm: this.fields.ncm.elements.edit.input
         }
-    }
 
-    deleteItem(itemQuery?: IItem) {
-        (itemQuery ? deleteItems : deleteItem)(itemQuery ?? this.trackingItem).then(ok => {
-            if(ok) this.reset();
-        });
-    }
-
-    saveItem() {
-        try {
-            const updatedItem = {
-                name: this.elements.inputs.name.element.value,
-                barcode: this.elements.inputs.barcode.element.value,
-                "price.cost": cashToInt(this.elements.inputs.cost.element.value.replace(/[^,.0-9]/g, "")),
-                "price.sale": cashToInt(this.elements.inputs.sale.element.value.replace(/[^,.0-9]/g, "")),
-                stock: parseInt(this.elements.inputs.stock.element.value),
-                ncm: NCM(this.elements.inputs.ncm.element.value)
-            };
-
-            updateItem(this.trackingItem, updatedItem).then(ok => {
-                if (ok) {
-                    this.menus.edit.close();
-                }
-            });
-        } catch (err) {
-            console.log(err)
+        this.dbFunctions = {
+            getOne: getItem,
+            getAll: getItems,
+            create: createItem,
+            deleteOne: deleteItem,
+            deleteAll: deleteItems,
+            update: updateItem,
         }
+    }
+
+    translateField(key: string) {
+        if(key == "cost" || key == "sale") return `price.${key}`;
+        return key;
     }
 
     loadItems() {

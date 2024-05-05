@@ -5,15 +5,11 @@ const menu_1 = require("../extra/menu");
 class ViewManagementBase extends base_1.default {
     queryFromInput() { }
     ;
-    saveItem() { }
-    ;
     createItem() { }
     ;
-    deleteItem(itemQuery) { }
-    ;
-    loadItems() { }
-    ;
     editItem() { }
+    ;
+    renderItem(itemData) { }
     ;
     offset = 0;
     batchSize = 20;
@@ -22,6 +18,7 @@ class ViewManagementBase extends base_1.default {
     itemQuery;
     trackingItem;
     fields;
+    dbFunctions;
     constructor(name, fields, cssPathFile) {
         if (!Array.isArray(cssPathFile))
             cssPathFile = [cssPathFile];
@@ -222,6 +219,41 @@ class ViewManagementBase extends base_1.default {
             edit: edit,
             create: create,
         };
+    }
+    async deleteItem(query) {
+        let result;
+        if (query)
+            result = await this.dbFunctions.deleteAll(query);
+        else
+            result = await this.dbFunctions.deleteOne(this.trackingItem);
+        if (result)
+            this.reset();
+    }
+    translateField(key) {
+        return key;
+    }
+    saveItem() {
+        try {
+            const updated = {};
+            Object.entries(this.fields).forEach(entry => {
+                updated[this.translateField(entry[0])] = entry[1].elements.edit.input.element.value;
+            });
+            this.dbFunctions.update(this.trackingItem, updated).then(ok => {
+                if (ok) {
+                    this.menus.edit.close();
+                    this.reset();
+                }
+            });
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+    loadItems() {
+        this.dbFunctions.getAll(this.itemQuery, this.batchSize, this.offset).then(all => {
+            all.forEach(each => this.renderItem(each));
+        });
+        this.offset += this.batchSize;
     }
     reset() {
         this.clearItems();

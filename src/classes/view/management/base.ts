@@ -1,7 +1,8 @@
 import ViewBase from "../base";
 import ElementHolder, {HTMLElementType} from "../../element/holder";
-import {CollectionTypes} from "../../../database";
+import {CollectionChangeTypes, CollectionTypes} from "../../../database";
 import Menu, {Confirm, ButtonData} from "../extra/menu";
+import {IItem} from "../../../database/models/item";
 
 export interface IManagementUsedElements {
     editMenu: {
@@ -50,11 +51,9 @@ export interface IFieldData {
 
 export default class ViewManagementBase extends ViewBase {
     queryFromInput(): void {};
-    saveItem(): void {};
     createItem(): void {};
-    deleteItem(itemQuery?: CollectionTypes): void {};
-    loadItems(): void {};
     editItem(): void {};
+    renderItem(itemData: IItem): void {};
     offset: number = 0;
     batchSize: number = 20;
     elements: IManagementUsedElements;
@@ -62,6 +61,14 @@ export default class ViewManagementBase extends ViewBase {
     itemQuery: CollectionTypes;
     trackingItem: CollectionTypes;
     fields: Record<string, IFieldData>;
+    dbFunctions: {
+        getOne: (query: CollectionTypes) => Promise<CollectionTypes>,
+        getAll: (query: CollectionTypes, batch?: number, offset?: number) => Promise<CollectionTypes[]>,
+        create: (query: CollectionTypes) => Promise<boolean>,
+        deleteOne: (query: CollectionTypes) => Promise<boolean>,
+        deleteAll: (query: CollectionTypes, except?: CollectionTypes | CollectionTypes[]) => Promise<boolean>,
+        update: (query: CollectionTypes, changes: CollectionChangeTypes) => Promise<number>,
+    };
 
     constructor(name: string, fields: Record<string, IFieldData>, cssPathFile?: string | string[]) {
         if(!Array.isArray(cssPathFile)) cssPathFile = [cssPathFile];
@@ -278,6 +285,42 @@ export default class ViewManagementBase extends ViewBase {
             edit: edit,
             create: create,
         }
+    }
+
+    async deleteItem(query?: CollectionTypes) {
+        let result;
+        if(query) result = await this.dbFunctions.deleteAll(query);
+        else result = await this.dbFunctions.deleteOne(this.trackingItem);
+        if(result) this.reset();
+    }
+
+    translateField(key: string) {
+        return key;
+    }
+
+    saveItem() {
+        try {
+            const updated: {[key in keyof typeof this.fields]: any} = {};
+            Object.entries(this.fields).forEach(entry => {
+                updated[this.translateField(entry[0])] = entry[1].elements.edit.input.element.value;
+            });
+
+            this.dbFunctions.update(this.trackingItem, updated).then(ok => {
+                if (ok) {
+                    this.menus.edit.close();
+                    this.reset();
+                }
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    loadItems() {
+        this.dbFunctions.getAll(this.itemQuery, this.batchSize, this.offset).then(all => {
+            all.forEach(each => this.renderItem(each));
+        });
+        this.offset += this.batchSize;
     }
 
     reset() {
