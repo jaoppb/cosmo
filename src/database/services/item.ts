@@ -61,7 +61,7 @@ export async function deleteItem(query: IItem) {
 
 export async function deleteItems(query: IItem, except?: IItem | IItem[]) {
     if(except) {
-        if(Array.isArray(except)) except = [except];
+        if(!Array.isArray(except)) except = [except];
         query = {
             $and: [
                 query,

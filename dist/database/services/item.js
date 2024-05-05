@@ -71,7 +71,7 @@ async function deleteItem(query) {
 exports.deleteItem = deleteItem;
 async function deleteItems(query, except) {
     if (except) {
-        if (Array.isArray(except))
+        if (!Array.isArray(except))
             except = [except];
         query = {
             $and: [
