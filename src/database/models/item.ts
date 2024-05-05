@@ -20,7 +20,19 @@ export function NCM(value: TNCM | string) {
     return value;
 }
 
-export interface IItem extends Record<string, any> {
+export enum ItemFields {
+    _id = "_id",
+    name = "name",
+    barcode = "barcode",
+    price = "price",
+    stock = "stock",
+    ncm = "ncm"
+}
+
+type ItemKeys = keyof typeof ItemFields;
+type ItemKeyFields = {[key in ItemKeys]?: any};
+
+export interface IItem extends ItemKeyFields {
     _id?: ObjectId;
     name?: string;
     barcode?: string;
