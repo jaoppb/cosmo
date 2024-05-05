@@ -23,6 +23,8 @@ export type SaleQueryItem<Type = (ItemQuery | IItem)[]> = { items?: Type }
 
 export type SaleQuery<Type = (ItemQuery | IItem)[]> = Omit<ISale, "items"> & {
     $or?: (SaleQuery | { "total.quantity"?: number } | { "total.price"?: number } | SaleQueryItem<Type>)[],
+    $and?: SaleQuery[],
+    $nor?: SaleQuery[],
     "total.quantity"?: number,
     "total.price"?: number,
     items?: Type

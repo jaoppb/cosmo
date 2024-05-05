@@ -1,4 +1,4 @@
-import Sale, {SaleItemQuery, SaleQuery, SaleQueryItem} from "../models/sale";
+import Sale, {ISale, ISaleChanges, SaleItemQuery, SaleQuery, SaleQueryItem} from "../models/sale";
 import {collections} from "../index";
 import {handleItemQuery, updateItem} from "./item";
 import {IItem, ItemQuery} from "../models/item";
@@ -15,7 +15,7 @@ function handleQuery(queries: SaleQuery): SaleQuery<SaleItemQuery> {
         }
     };
     handledQuery.$or.push(handledQueryItems);
-    queries.$or.forEach(query => {
+    queries.$or?.forEach(query => {
         if(!Object.keys(query).includes("items")) return;
         const items = (query as SaleQueryItem).items;
         items.forEach(item => {
@@ -46,6 +46,12 @@ export async function createSale(sale: Sale) {
     return true;
 }
 
+export async function getSale(query: SaleQuery) {
+    const handledQuery = handleQuery(query);
+    if(handledQuery.items.$elemMatch.$or.length === 0) delete handledQuery.items;
+    return await collections.sales.findOne(handledQuery) as Sale;
+}
+
 export async function getSales(query: SaleQuery, limit?: number, offset?: number) {
     let handledQuery: SaleQuery<SaleItemQuery>;
     if (query.$or.some(query => Object.keys(query).includes("items"))) handledQuery = handleQuery(query);
@@ -60,4 +66,41 @@ export async function getSales(query: SaleQuery, limit?: number, offset?: number
         else res = await sales.limit(limit).toArray() as Sale[];
     } else res = await sales.toArray() as Sale[];
     return res;
+}
+
+export async function updateSale(query: ISale, changes: ISaleChanges) {
+    const sale = await getSale(query);
+    let ok = 0;
+
+    delete changes._id;
+    if(sale.timestamp === changes.timestamp) delete changes.timestamp;
+    if(sale.total.price === changes["total.price"]) delete changes["total.price"];
+    if(sale.total.quantity === changes["total.quantity"]) delete changes["total.quantity"];
+    if(sale.items.toString() === changes.items.toString()) delete changes.items;
+
+    if(Object.keys(changes).length > 0) {
+        ok = (await collections.sales.updateOne(query, {$set: changes})).modifiedCount;
+    }
+    return ok;
+}
+
+export async function deleteSale(query: ISale) {
+    await collections.sales.deleteOne(query);
+    return true;
+}
+
+export async function deleteSales(query: SaleQuery, except?: ISale | ISale[]) {
+    if(except) {
+        if(!Array.isArray(except)) except = [except];
+        query = {
+            $and: [
+                query,
+                {
+                    $nor: except,
+                }
+            ]
+        }
+    }
+    await collections.sales.deleteMany(query);
+    return true;
 }
