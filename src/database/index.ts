@@ -1,7 +1,7 @@
 import * as mongodb from "mongodb";
 import * as dotenv from "dotenv";
 import Item, {IItem, IItemChanges, NCM} from "./models/item";
-import {ISale} from "./models/sale";
+import {ISale, ISaleChanges} from "./models/sale";
 import {createItem, getItem, getItems} from "./services/item";
 import {IUser} from "./models/user";
 
@@ -32,7 +32,7 @@ const createPlaceHolderItem = async () => {
 }
 
 export type CollectionTypes = IItem | ISale;
-export type CollectionChangeTypes = IItemChanges | ISale
+export type CollectionChangeTypes = IItemChanges | ISaleChanges;
 
 export default async function connectToDatabase() {
     const client: mongodb.MongoClient = new mongodb.MongoClient(process.env.DB_CONN_STRING);

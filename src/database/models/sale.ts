@@ -28,6 +28,11 @@ export type SaleQuery<Type = (ItemQuery | IItem)[]> = Omit<ISale, "items"> & {
     items?: Type
 }
 
+export interface ISaleChanges extends ISale {
+    "total.quantity"?: number;
+    "total.price"?: number;
+}
+
 export type PaymentInfo = {
     types: {
         [K in (typeof global.user.settings.paymentTypes extends ReadonlyArray<infer U> ? U : never)]: number
