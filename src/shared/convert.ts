@@ -8,6 +8,10 @@ export function camelCaseToTitle(str: string): string {
     return title(str.replace(/[A-Z]/g, match => " " + match));
 }
 
+export function normalCaseToCamelCase(str: string): string {
+    return str.toLowerCase().replace(/ ([a-z])/g, (_, p1) => p1.toUpperCase());
+}
+
 export function camelCaseToKebab(str: string): string {
     return str.replace(/[A-Z]/g, match => "-" + match).toLowerCase();
 }

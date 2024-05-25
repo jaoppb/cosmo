@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseNCM = exports.cashToInt = exports.parseToCash = exports.camelCaseToKebab = exports.camelCaseToTitle = exports.title = void 0;
+exports.parseNCM = exports.cashToInt = exports.parseToCash = exports.camelCaseToKebab = exports.normalCaseToCamelCase = exports.camelCaseToTitle = exports.title = void 0;
 function title(str) {
     return str.replace(/(?=^| )[a-zA-Z]/g, (match, first) => (match != first ? " " : "") + match.toUpperCase());
     ;
@@ -10,6 +10,10 @@ function camelCaseToTitle(str) {
     return title(str.replace(/[A-Z]/g, match => " " + match));
 }
 exports.camelCaseToTitle = camelCaseToTitle;
+function normalCaseToCamelCase(str) {
+    return str.toLowerCase().replace(/ ([a-z])/g, (_, p1) => p1.toUpperCase());
+}
+exports.normalCaseToCamelCase = normalCaseToCamelCase;
 function camelCaseToKebab(str) {
     return str.replace(/[A-Z]/g, match => "-" + match).toLowerCase();
 }
