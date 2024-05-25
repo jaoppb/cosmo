@@ -146,8 +146,16 @@
                 padding-left: 10px;
             }
 
-            input:hover:not(:focus) {
+            input:hover:not(:focus):not(:read-only) {
                 background-color: rgba(0, 0, 0, .1);
+            }
+
+            input[type="datetime-local"] {
+                cursor: text;
+            }
+
+            input:read-only {
+                cursor: default;
             }
         }
 
