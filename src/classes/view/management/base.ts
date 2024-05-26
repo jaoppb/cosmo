@@ -3,6 +3,7 @@ import ElementHolder, {HTMLElementType} from "../../element/holder";
 import {CollectionChangeTypes, CollectionTypes} from "../../../database";
 import Menu, {Confirm, ButtonData} from "../extra/menu";
 import {IItem} from "../../../database/models/item";
+import {normalCaseToCamelCase} from "../../../shared/convert";
 
 export interface IManagementUsedElements {
     editMenu: {
@@ -182,7 +183,7 @@ export default class ViewManagementBase extends ViewBase {
         this.fields = fields;
         Object.entries(fields).forEach(entry => {
             const [name, field] = entry;
-            itemsHeader.createChild(field.label.toLowerCase(), "span").element.innerText = field.label;
+            itemsHeader.createChild(normalCaseToCamelCase(field.label), "span").element.innerText = field.label;
             const editElement= editFields.createChild(name, "div", ["field"]);
             const createElement = createFields.createChild(name, "div", ["field"]);
             field.elements = {

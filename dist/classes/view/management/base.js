@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("../base");
 const menu_1 = require("../extra/menu");
+const convert_1 = require("../../../shared/convert");
 class ViewManagementBase extends base_1.default {
     queryFromInput() { }
     ;
@@ -117,7 +118,7 @@ class ViewManagementBase extends base_1.default {
         this.fields = fields;
         Object.entries(fields).forEach(entry => {
             const [name, field] = entry;
-            itemsHeader.createChild(field.label.toLowerCase(), "span").element.innerText = field.label;
+            itemsHeader.createChild((0, convert_1.normalCaseToCamelCase)(field.label), "span").element.innerText = field.label;
             const editElement = editFields.createChild(name, "div", ["field"]);
             const createElement = createFields.createChild(name, "div", ["field"]);
             field.elements = {
