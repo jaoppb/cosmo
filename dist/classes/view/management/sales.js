@@ -38,12 +38,6 @@ class ViewManagementSales extends base_1.default {
             update: sale_1.updateSale,
         };
     }
-    loadItems() {
-        (0, sale_1.getSales)(this.itemQuery, this.batchSize, this.offset).then(sales => {
-            sales.forEach(sale => this.renderItem(sale));
-        });
-        this.offset += this.batchSize;
-    }
     renderItem(itemData) {
         const item = this.elements.search.items.list.createChild("item", "div");
         const selection = item.createChild("select", "div");

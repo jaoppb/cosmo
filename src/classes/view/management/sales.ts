@@ -42,13 +42,6 @@ export default class ViewManagementSales extends ViewManagementBase {
         };
     }
 
-    loadItems() {
-        getSales(this.itemQuery, this.batchSize, this.offset).then(sales => {
-            sales.forEach(sale => this.renderItem(sale));
-        });
-        this.offset += this.batchSize;
-    }
-
     renderItem(itemData: ISale) {
         const item = this.elements.search.items.list.createChild("item", "div");
 

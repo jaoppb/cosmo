@@ -87,12 +87,6 @@ class ViewManagementProducts extends base_1.default {
             return `price.${key}`;
         return key;
     }
-    loadItems() {
-        (0, item_1.getItems)(this.itemQuery, this.batchSize, this.offset).then(items => {
-            items.forEach(item => this.renderItem(item));
-        });
-        this.offset += this.batchSize;
-    }
     renderItem(itemData) {
         const item = this.elements.search.items.list.createChild("item", "div");
         const selection = item.createChild("select", "div");
