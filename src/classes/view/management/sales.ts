@@ -109,6 +109,11 @@ export default class ViewManagementSales extends ViewManagementBase {
 
     editItem() {
         if(this.trackingItem === null) return;
+        const date = new Date(this.trackingItem.timestamp);
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        this.editFields.date.element.value = date.toISOString().replace(/Z$/, "");
+        this.editFields.value.element.value = parseToCash(this.trackingItem.total.price);
+        this.editFields.quantity.element.value = this.trackingItem.total.quantity.toString();
         this.menus.edit.open();
     }
 }
