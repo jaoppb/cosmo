@@ -23,7 +23,7 @@ const fields = {
         }
     },
     value: {
-        label: "Valor",
+        label: "Valor Pago",
         input: {
             currency: true,
             readonly: true,

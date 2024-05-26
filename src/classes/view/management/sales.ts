@@ -23,7 +23,7 @@ const fields: Record<FieldKeys, IFieldData> = {
         }
     },
     value: {
-        label: "Valor",
+        label: "Valor Pago",
         input: {
             currency: true,
             readonly: true,
