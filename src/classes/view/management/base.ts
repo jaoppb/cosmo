@@ -37,6 +37,7 @@ export interface IFieldData {
         currency?: boolean,
         type?: string,
         maxLength?: number,
+        readonly?: boolean,
     },
     elements?: {
         edit: {
@@ -205,11 +206,13 @@ export default class ViewManagementBase extends ViewBase {
                     inputCurrency.element.innerText = global.user.settings.currency;
                     const inputNumber = input.createChild("number", "input");
                     if(field.input?.maxLength) inputNumber.element.maxLength = field.input.maxLength;
+                    if(field.input?.readonly) inputNumber.element.readOnly = field.input.readonly;
                     elements[1].input = inputNumber;
                 } else {
                     const input = main.createChild("input", "input");
                     input.element.type = field.input?.type ?? "text";
                     if(field.input?.maxLength) input.element.maxLength = field.input.maxLength;
+                    if(field.input?.readonly) input.element.readOnly = field.input.readonly;
                     elements[1].input = input;
                 }
             }

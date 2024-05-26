@@ -140,6 +140,8 @@ class ViewManagementBase extends base_1.default {
                     const inputNumber = input.createChild("number", "input");
                     if (field.input?.maxLength)
                         inputNumber.element.maxLength = field.input.maxLength;
+                    if (field.input?.readonly)
+                        inputNumber.element.readOnly = field.input.readonly;
                     elements[1].input = inputNumber;
                 }
                 else {
@@ -147,6 +149,8 @@ class ViewManagementBase extends base_1.default {
                     input.element.type = field.input?.type ?? "text";
                     if (field.input?.maxLength)
                         input.element.maxLength = field.input.maxLength;
+                    if (field.input?.readonly)
+                        input.element.readOnly = field.input.readonly;
                     elements[1].input = input;
                 }
             }
