@@ -6,7 +6,7 @@ const convert_1 = require("../../../shared/convert");
 var FieldKeys;
 (function (FieldKeys) {
     FieldKeys["Date"] = "date";
-    FieldKeys["Quantitiy"] = "quantity";
+    FieldKeys["Quantity"] = "quantity";
     FieldKeys["Value"] = "value";
 })(FieldKeys || (FieldKeys = {}));
 const fields = {

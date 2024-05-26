@@ -5,7 +5,7 @@ import {cashToInt, parseToCash} from "../../../shared/convert";
 
 enum FieldKeys {
     Date = "date",
-    Quantitiy = "quantity",
+    Quantity = "quantity",
     Value = "value",
 }
 
