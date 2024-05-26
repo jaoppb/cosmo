@@ -172,7 +172,8 @@ class ViewManagementBase extends base_1.default {
         });
         this.createKeyboardAction(/^Arrow(Down|Up)$/, (event) => {
             event.preventDefault();
-            if (/keydown/.test(event.type) && !event.repeat)
+            if (/keydown/.test(event.type) && !event.repeat ||
+                Object.values(this.menus).some(menu => menu.check()))
                 return;
             const current = document.querySelector(".list .item.current");
             if (current) {

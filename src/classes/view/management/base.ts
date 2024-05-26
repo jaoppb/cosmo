@@ -235,7 +235,8 @@ export default class ViewManagementBase extends ViewBase {
 
         this.createKeyboardAction(/^Arrow(Down|Up)$/, (event: KeyboardEvent) => {
             event.preventDefault();
-            if(/keydown/.test(event.type) && !event.repeat) return;
+            if(/keydown/.test(event.type) && !event.repeat ||
+                Object.values(this.menus).some(menu => menu.check())) return;
 
             const current = document.querySelector(".list .item.current");
             if(current) {
