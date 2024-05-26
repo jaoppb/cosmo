@@ -32,10 +32,16 @@ const fields = {
 };
 class ViewManagementSales extends base_1.default {
     itemQuery = { $or: [{}] };
+    editFields;
     trackingItem = {};
     constructor() {
         super("sales", fields, "./css/management/sales.css");
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;
+        this.editFields = {
+            date: this.fields.date.elements.edit.input,
+            value: this.fields.value.elements.edit.input,
+            quantity: this.fields.quantity.elements.edit.input,
+        };
         this.dbFunctions = {
             getOne: sale_1.getSale,
             getAll: sale_1.getSales,

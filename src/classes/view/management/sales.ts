@@ -33,11 +33,18 @@ const fields: Record<FieldKeys, IFieldData> = {
 
 export default class ViewManagementSales extends ViewManagementBase {
     itemQuery: SaleQuery = {$or: [{}]};
+    editFields: { [K in FieldKeys]?: ElementHolder<HTMLElementType<"input">> };
     trackingItem: ISale = {};
     constructor() {
         super("sales", fields, "./css/management/sales.css");
 
         this.elements.search.input.element.placeholder = `${global.user.settings.currency}12,42; Código de Barras; Nome do Produto...`;
+
+        this.editFields = {
+            date: this.fields.date.elements.edit.input,
+            value: this.fields.value.elements.edit.input,
+            quantity: this.fields.quantity.elements.edit.input,
+        }
 
         this.dbFunctions = {
             getOne: getSale,
