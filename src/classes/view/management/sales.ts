@@ -1,5 +1,5 @@
 import ViewManagementBase, {IFieldData} from "./base";
-import {ISale, SaleQuery} from "../../../database/models/sale";
+import {ISale, ISaleChanges, SaleQuery} from "../../../database/models/sale";
 import {createSale, deleteSale, deleteSales, getSale, getSales, updateSale} from "../../../database/services/sale";
 import {cashToInt, parseToCash} from "../../../shared/convert";
 
@@ -105,6 +105,14 @@ export default class ViewManagementSales extends ViewManagementBase {
             }
         }
         this.loadItems();
+    }
+
+    saveItem() {
+        const updated: ISaleChanges = {};
+        const timestamp = Date.parse(this.editFields.date.element.value);
+
+        if(timestamp !== this.trackingItem.timestamp) updated.timestamp = timestamp;
+        super.saveItem(updated);
     }
 
     editItem() {

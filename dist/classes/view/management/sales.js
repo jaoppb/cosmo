@@ -97,6 +97,13 @@ class ViewManagementSales extends base_1.default {
         }
         this.loadItems();
     }
+    saveItem() {
+        const updated = {};
+        const timestamp = Date.parse(this.editFields.date.element.value);
+        if (timestamp !== this.trackingItem.timestamp)
+            updated.timestamp = timestamp;
+        super.saveItem(updated);
+    }
     editItem() {
         if (this.trackingItem === null)
             return;
