@@ -11,7 +11,10 @@ enum FieldKeys {
 
 const fields: Record<FieldKeys, IFieldData> = {
     date: {
-        label: "Data"
+        label: "Data",
+        input: {
+            type: "datetime-local"
+        }
     },
     quantity: {
         label: "Quantidade",

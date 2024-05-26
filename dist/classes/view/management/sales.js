@@ -11,7 +11,10 @@ var FieldKeys;
 })(FieldKeys || (FieldKeys = {}));
 const fields = {
     date: {
-        label: "Data"
+        label: "Data",
+        input: {
+            type: "datetime-local"
+        }
     },
     quantity: {
         label: "Quantidade",
