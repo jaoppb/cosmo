@@ -1,6 +1,6 @@
 import ViewBase from "../base";
 import {itemsUtils} from "../../../database";
-import Item, {IItem, NCM} from "../../../database/models/item";
+import Item, {IItem, IItemChanges, NCM} from "../../../database/models/item";
 import {cashToInt, parseNCM, parseToCash} from "../../../shared/convert";
 import {getItems, updateItem, deleteItem, getItem, deleteItems, createItem} from "../../../database/services/item";
 import ElementHolder, {HTMLElementType} from "../../element/holder";

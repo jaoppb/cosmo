@@ -2,6 +2,7 @@ import ViewManagementBase, {IFieldData} from "./base";
 import {ISale, ISaleChanges, SaleQuery} from "../../../database/models/sale";
 import {createSale, deleteSale, deleteSales, getSale, getSales, updateSale} from "../../../database/services/sale";
 import {cashToInt, parseToCash} from "../../../shared/convert";
+import ElementHolder, {HTMLElementType} from "../../element/holder";
 
 enum FieldKeys {
     Date = "date",
