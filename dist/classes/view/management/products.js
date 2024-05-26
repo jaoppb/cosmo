@@ -139,6 +139,21 @@ class ViewManagementProducts extends base_1.default {
         }
         this.loadItems();
     }
+    saveItem() {
+        const updated = {};
+        const { inputs } = this.elements;
+        if (this.trackingItem.name !== inputs.name.element.value)
+            updated.name = inputs.name.element.value;
+        if (this.trackingItem.barcode !== inputs.barcode.element.value)
+            updated.barcode = inputs.barcode.element.value;
+        if ((0, convert_1.parseToCash)(this.trackingItem.price.cost) !== inputs.cost.element.value)
+            updated["price.cost"] = (0, convert_1.cashToInt)(inputs.cost.element.value);
+        if ((0, convert_1.parseToCash)(this.trackingItem.price.sale) !== inputs.sale.element.value)
+            updated["price.sale"] = (0, convert_1.cashToInt)(inputs.sale.element.value);
+        if (this.trackingItem.stock !== parseInt(inputs.stock.element.value))
+            updated.stock = parseInt(inputs.stock.element.value);
+        super.saveItem(updated);
+    }
     editItem() {
         if (this.trackingItem == null)
             return;

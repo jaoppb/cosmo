@@ -158,7 +158,7 @@ export default class ViewManagementBase extends ViewBase {
                 class: "save",
                 icon: "fa-check",
                 confirm: true,
-                handler: () => this.saveItem()
+                handler: () => this.saveItem(null)
             }
         ];
         const edit = new Menu("Editar", editButtonsData, this, menus);
@@ -303,13 +303,8 @@ export default class ViewManagementBase extends ViewBase {
         return key;
     }
 
-    saveItem() {
+    saveItem(updated: CollectionChangeTypes) {
         try {
-            const updated: {[key in keyof typeof this.fields]: any} = {};
-            Object.entries(this.fields).forEach(entry => {
-                updated[this.translateField(entry[0])] = entry[1].elements.edit.input.element.value;
-            });
-
             this.dbFunctions.update(this.trackingItem, updated).then(ok => {
                 if (ok) {
                     this.menus.edit.close();

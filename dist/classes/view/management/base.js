@@ -94,7 +94,7 @@ class ViewManagementBase extends base_1.default {
                 class: "save",
                 icon: "fa-check",
                 confirm: true,
-                handler: () => this.saveItem()
+                handler: () => this.saveItem(null)
             }
         ];
         const edit = new menu_1.default("Editar", editButtonsData, this, menus);
@@ -238,12 +238,8 @@ class ViewManagementBase extends base_1.default {
     translateField(key) {
         return key;
     }
-    saveItem() {
+    saveItem(updated) {
         try {
-            const updated = {};
-            Object.entries(this.fields).forEach(entry => {
-                updated[this.translateField(entry[0])] = entry[1].elements.edit.input.element.value;
-            });
             this.dbFunctions.update(this.trackingItem, updated).then(ok => {
                 if (ok) {
                     this.menus.edit.close();
