@@ -90,6 +90,12 @@ async function updateSale(query, changes) {
 }
 exports.updateSale = updateSale;
 async function deleteSale(query) {
+    for (const itemSold of query.items) {
+        const currentItem = await (0, item_1.getItem)({ _id: itemSold._id });
+        await (0, item_1.updateItem)({ _id: itemSold._id }, {
+            stock: currentItem.stock + itemSold.quantity
+        });
+    }
     await index_1.collections.sales.deleteOne(query);
     return true;
 }

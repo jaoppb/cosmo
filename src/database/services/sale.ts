@@ -1,6 +1,6 @@
 import Sale, {ISale, ISaleChanges, SaleItemQuery, SaleQuery, SaleQueryItem} from "../models/sale";
 import {collections} from "../index";
-import {handleItemQuery, updateItem} from "./item";
+import {getItem, handleItemQuery, updateItem} from "./item";
 import {IItem, ItemQuery} from "../models/item";
 
 function handleQuery(queries: SaleQuery): SaleQuery<SaleItemQuery> {
@@ -85,6 +85,15 @@ export async function updateSale(query: ISale, changes: ISaleChanges) {
 }
 
 export async function deleteSale(query: ISale) {
+    for (const itemSold of query.items) {
+        const currentItem = await getItem({_id: itemSold._id});
+        await updateItem(
+            {_id: itemSold._id},
+            {
+                stock: currentItem.stock + itemSold.quantity
+            }
+        );
+    }
     await collections.sales.deleteOne(query);
     return true;
 }
