@@ -294,11 +294,12 @@ class ViewManagementBase extends base_1.default {
     }
     load(parent) {
         super.load(parent);
+        this.queryFromInput();
         this.loadItems();
     }
     unload() {
-        super.unload();
         this.reset();
+        super.unload();
     }
 }
 exports.default = ViewManagementBase;

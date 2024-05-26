@@ -359,11 +359,12 @@ export default class ViewManagementBase extends ViewBase {
 
     load(parent: HTMLElement) {
         super.load(parent);
+        this.queryFromInput();
         this.loadItems();
     }
 
     unload() {
-        super.unload();
         this.reset();
+        super.unload();
     }
 }
