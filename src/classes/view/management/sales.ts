@@ -18,11 +18,15 @@ const fields: Record<FieldKeys, IFieldData> = {
     },
     quantity: {
         label: "Quantidade",
+        input: {
+            readonly: true,
+        }
     },
     value: {
         label: "Valor",
         input: {
-            currency: true
+            currency: true,
+            readonly: true,
         }
     }
 };
